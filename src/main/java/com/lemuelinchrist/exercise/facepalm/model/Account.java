@@ -1,9 +1,8 @@
 package com.lemuelinchrist.exercise.facepalm.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Lemuel Cantos
@@ -17,6 +16,10 @@ public class Account {
 
     @Column(unique = true, nullable = false)
     private String email;
+
+    @Column(unique = true)
+    @ManyToMany(fetch = FetchType.LAZY)
+    private Set<Account> friends;
 
     public String getEmail() {
         return email;
@@ -45,4 +48,19 @@ public class Account {
     }
 
 
+    public void addFriend(Account account) {
+        if (friends == null) {
+            friends = new HashSet<>();
+        }
+        friends.add(account);
+
+    }
+
+    public Set<Account> getFriends() {
+        return friends;
+    }
+
+    public void setFriends(Set<Account> friends) {
+        this.friends = friends;
+    }
 }
