@@ -1,8 +1,7 @@
-package com.lemuelinchrist.exercise.facepalm;
+package com.lemuelinchrist.exercise.facepalm.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lemuelinchrist.exercise.facepalm.controllers.AccountController;
 import com.lemuelinchrist.exercise.facepalm.model.Account;
 import com.lemuelinchrist.exercise.facepalm.service.AccountService;
 import org.junit.Assert;

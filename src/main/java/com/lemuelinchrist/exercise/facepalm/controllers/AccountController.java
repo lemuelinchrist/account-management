@@ -25,11 +25,12 @@ public class AccountController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    ResponseEntity<?> create(@RequestBody Account newAccount) {
+    ResponseEntity<Account> create(@RequestBody Account newAccount) {
         Long id = accountService.save(newAccount);
+        newAccount.setId(id);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path(
                 "/{id}").buildAndExpand(id).toUri();
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.created(location).body(newAccount);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
