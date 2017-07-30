@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.Arrays;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,18 +41,42 @@ public class AccountManagementControllerTest {
         String firstEmail = "good@email.com";
         String secondEmail = "secondGood@email.com";
 
-        BeFriendDTO beFriendDTO = new BeFriendDTO();
-        beFriendDTO.setFriends(Arrays.asList(firstEmail, secondEmail));
-        RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/account-management/befriend")
-                .accept(MediaType.APPLICATION_JSON).content(convertToJson(beFriendDTO))
-                .contentType(MediaType.APPLICATION_JSON);
+        RequestBuilder requestBuilder = getRequestBuilder(firstEmail, secondEmail);
 
         MvcResult result = mockMvc.perform(requestBuilder)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success", is("true")))
                 .andReturn();
 
+    }
+
+    @Test
+    public void shouldNotAllowBadParameters() throws Exception {
+
+        RequestBuilder requestBuilder = getRequestBuilder("bad", "secondGood@email.com");
+
+        MvcResult result = mockMvc.perform(requestBuilder)
+                .andExpect(status().isBadRequest())
+                .andReturn();
+        assertThat(result.getResponse().getErrorMessage()).containsIgnoringCase("Wrong Parameters");
+
+        requestBuilder = getRequestBuilder("ok@good.com", "");
+
+        result = mockMvc.perform(requestBuilder)
+                .andExpect(status().isBadRequest())
+                .andReturn();
+        assertThat(result.getResponse().getErrorMessage()).containsIgnoringCase("Wrong Parameters");
+        assertThat(result.getResolvedException().getMessage()).containsIgnoringCase("empty");
+
+    }
+
+    private RequestBuilder getRequestBuilder(String firstEmail, String secondEmail) throws Exception {
+        BeFriendDTO beFriendDTO = new BeFriendDTO();
+        beFriendDTO.setFriends(Arrays.asList(firstEmail, secondEmail));
+        return MockMvcRequestBuilders
+                .post("/account-management/befriend")
+                .accept(MediaType.APPLICATION_JSON).content(convertToJson(beFriendDTO))
+                .contentType(MediaType.APPLICATION_JSON);
     }
 
     public String convertToJson(Object o) throws Exception {
