@@ -34,9 +34,11 @@ public class AccountServiceTest {
     @Test
     public void accountShouldBeCreated() throws Exception {
         Account newAccount = new Account();
-        newAccount.setEmail("testEmail@gmail.com");
+        String email = "testEmail@gmail.com";
+        newAccount.setEmail(email);
         newAccount.setId(1L);
         Mockito.when(accountRepository.save(newAccount)).thenReturn(newAccount);
+        Mockito.when(accountRepository.findByEmail(email)).thenReturn(Optional.empty());
 
         Long id = accountService.save(newAccount);
         assert id == 1L;

@@ -56,8 +56,8 @@ public class AccountTest {
         thirdAccount.addFriend(firstAccount);
         firstAccount = accountRepository.save(firstAccount);
         thirdAccount = accountRepository.save(thirdAccount);
-        assertThat(firstAccount.getFriends()).containsExactly(thirdAccount, secondAccount);
-        assertThat(thirdAccount.getFriends()).containsExactly(firstAccount);
+        assertThat(firstAccount.getFriends()).contains(thirdAccount, secondAccount);
+        assertThat(thirdAccount.getFriends()).contains(firstAccount);
 
 
 
