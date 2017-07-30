@@ -84,7 +84,7 @@ public class AccountManagementControllerTest {
         Mockito.when(accountService.getFriendEmailsByEmail(email)).thenReturn(friendList);
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get("/account-management/get-friends")
+                .post("/account-management/get-friends")
                 .accept(MediaType.APPLICATION_JSON).content(convertToJson(account))
                 .contentType(MediaType.APPLICATION_JSON);
 

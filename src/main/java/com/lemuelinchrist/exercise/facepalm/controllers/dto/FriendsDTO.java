@@ -18,6 +18,10 @@ public class FriendsDTO {
         this.count = count;
     }
 
+    public FriendsDTO() {
+
+    }
+
     public String getSuccess() {
         return success;
     }

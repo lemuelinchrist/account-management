@@ -1,6 +1,7 @@
 package com.lemuelinchrist.exercise.facepalm;
 
 import com.lemuelinchrist.exercise.facepalm.controllers.dto.BeFriendDTO;
+import com.lemuelinchrist.exercise.facepalm.controllers.dto.FriendsDTO;
 import com.lemuelinchrist.exercise.facepalm.model.Account;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,7 +43,7 @@ public class IntegrationTest {
     }
 
     /**
-     * USE CASE #1
+     * USER STORY #1
      *
      * @throws Exception
      */
@@ -73,6 +74,19 @@ public class IntegrationTest {
                 restTemplate.postForEntity("/account-management/befriend", requestEntity, Map.class);
         body = responseEntity.getBody();
         assertThat(body.get("success")).isEqualTo("true");
+
+        // *********** USER STORY 2
+        // *** lets get the list
+        HttpEntity<Account> friendListRequestEntity = new HttpEntity<>(firstAccount);
+        ResponseEntity<FriendsDTO> friendsDTOResponseEntity = restTemplate
+                .postForEntity("/account-management/get-friends", friendListRequestEntity, FriendsDTO.class);
+        FriendsDTO friendsDTO = friendsDTOResponseEntity
+                .getBody();
+
+        assertThat(friendsDTO.getSuccess()).isEqualToIgnoringCase("true");
+        assertThat(friendsDTO.getFriends()).contains(secondEmail, thirdEmail);
+        assertThat(friendsDTO.getCount()).isEqualTo(2);
+
 
     }
 

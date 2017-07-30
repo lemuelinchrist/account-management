@@ -77,7 +77,7 @@ public class AccountManagementController {
      * @return returns json object with the following structure: {success: true, friends: ['email@email.com'], count:1 }
      * @throws NonExistentAccountException The service will not accept emails that do not have a created account yet
      */
-    @RequestMapping(value = "/get-friends", method = RequestMethod.GET)
+    @RequestMapping(value = "/get-friends", method = RequestMethod.POST)
     public ResponseEntity<FriendsDTO> getFriends(@Valid @RequestBody Account account) throws NonExistentAccountException {
         List<String> friends = accountService.getFriendEmailsByEmail(account.getEmail());
         FriendsDTO friendsDTO = new FriendsDTO("true", friends, friends.size());
