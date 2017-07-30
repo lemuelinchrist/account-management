@@ -1,5 +1,8 @@
 package com.lemuelinchrist.exercise.facepalm.model;
 
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotEmpty;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -15,6 +18,8 @@ public class Account {
     private Long id;
 
     @Column(unique = true, nullable = false)
+    @NotEmpty
+    @Email
     private String email;
 
     @Column(unique = true)
@@ -48,7 +53,7 @@ public class Account {
     }
 
 
-    public void addFriend(Account account) {
+    void addFriend(Account account) {
         if (friends == null) {
             friends = new HashSet<>();
         }
@@ -56,7 +61,7 @@ public class Account {
 
     }
 
-    public Set<Account> getFriends() {
+    Set<Account> getFriends() {
         return friends;
     }
 

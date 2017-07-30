@@ -26,7 +26,7 @@ public class IntegrationTest {
     private TestRestTemplate restTemplate;
 
     @Test
-    public void createClient() throws Exception {
+    public void accountShouldBeCreated() throws Exception {
         Account newAccount = new Account();
         newAccount.setEmail("newEmail@yougotmail.com");
         HttpEntity<Account> requestEntity = new HttpEntity<>(newAccount);

@@ -37,7 +37,7 @@ public class AccountControllerTest {
     AccountService accountService;
 
     @Test
-    public void createAccount() throws Exception {
+    public void accountShouldBeCreated() throws Exception {
         Account newAccount = new Account();
         newAccount.setEmail("testEmail@gmail.com");
         newAccount.setId(1L);
@@ -57,7 +57,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    public void retrieveAccount() throws Exception {
+    public void accountShouldBeRetrieved() throws Exception {
         Account newAccount = new Account();
         newAccount.setEmail("testEmail@gmail.com");
         newAccount.setId(1L);
@@ -70,8 +70,40 @@ public class AccountControllerTest {
                 .contentType(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+    }
 
+    @Test
+    public void accountShouldNotHaveEmptyEmail() throws Exception {
+        Account newAccount = new Account();
+        newAccount.setEmail("");
+        newAccount.setId(1L);
+        Mockito.when(accountService.save(newAccount)).thenReturn(1L);
 
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/accounts")
+                .accept(MediaType.APPLICATION_JSON).content(convertToJson(newAccount))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(requestBuilder)
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+
+    }
+
+    @Test
+    public void accountShouldNotHaveBadEmailFormat() throws Exception {
+        Account newAccount = new Account();
+        newAccount.setEmail("badEmailFormat");
+        newAccount.setId(1L);
+        Mockito.when(accountService.save(newAccount)).thenReturn(1L);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/accounts")
+                .accept(MediaType.APPLICATION_JSON).content(convertToJson(newAccount))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(requestBuilder)
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andReturn();
     }
 
     public String convertToJson(Object o) {

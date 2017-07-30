@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
 
 /**
@@ -25,7 +26,7 @@ public class AccountController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    ResponseEntity<Account> create(@RequestBody Account newAccount) {
+    ResponseEntity<Account> create(@Valid @RequestBody Account newAccount) {
         Long id = accountService.save(newAccount);
         newAccount.setId(id);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path(
