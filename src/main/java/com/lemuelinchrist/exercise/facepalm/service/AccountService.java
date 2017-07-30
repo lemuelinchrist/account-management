@@ -7,8 +7,10 @@ import com.lemuelinchrist.exercise.facepalm.model.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Account Service is the Service bean that handles all kinds of management of Account from CRUD operations to querying.
@@ -27,6 +29,10 @@ public class AccountService {
         this.accountRepository = accountRepository;
     }
 
+
+    public Account findOne(Long id) {
+        return accountRepository.findOne(id);
+    }
 
     /**
      * Creates a new Account. It contains an email field that should be unique to all accounts.
@@ -48,7 +54,7 @@ public class AccountService {
      * @param firstEmail The email of the first Account
      * @param secondEmail The email of the second Account
      * @return returns a list of the two involved accounts with their updated friends field
-     * @throws NonExistentAccountException Thrown if
+     * @throws NonExistentAccountException Thrown if Account in the emails don't exist
      */
     public List<Account> befriendAccounts(String firstEmail, String secondEmail) throws NonExistentAccountException {
         Account firstAccount = accountRepository.findByEmail(firstEmail).orElseThrow(NonExistentAccountException::new);
@@ -61,7 +67,26 @@ public class AccountService {
 
     }
 
-    public Account findOne(Long id) {
-        return accountRepository.findOne(id);
+    /**
+     * USER STORY #2
+     * This function will return a list of emails of friends of an Account according to
+     * the given email.
+     *
+     * @param email The email of the account to be retreived.
+     * @return returns a set of friend emails.
+     * @throws NonExistentAccountException Thrown if the email doesn't exist in the database.
+     */
+    public List<String> getFriendEmailsByEmail(String email) throws NonExistentAccountException {
+
+        //TODO: Create JPQL to fetch email for better efficiency
+        final List<String> friendEmails = new ArrayList<>();
+        for (Account account : getFriends(email)) {
+            friendEmails.add(account.getEmail());
+        }
+        return friendEmails;
+    }
+
+    private Set<Account> getFriends(String email) throws NonExistentAccountException {
+        return accountRepository.findByEmail(email).orElseThrow(NonExistentAccountException::new).getFriends();
     }
 }

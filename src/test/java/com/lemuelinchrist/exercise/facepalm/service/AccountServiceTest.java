@@ -12,6 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,6 +80,31 @@ public class AccountServiceTest {
         assertThat(list).isNotNull();
         assertThat(list).extracting(Account::getEmail).contains(firstEmail, secondEmail);
         assertThat(list.get(0).getFriends()).hasSize(1);
+
+    }
+
+    @Test
+    public void accountShouldBeRetrieved() throws Exception {
+        Account account = new Account();
+        String email = "firstEmail@gmail.com";
+        account.setEmail(email);
+        account.setId(1L);
+
+        Account account2 = new Account();
+        String email2 = "secondEmail@gmail.com";
+        account2.setEmail(email2);
+        account2.setId(1L);
+
+        Account account3 = new Account();
+        String email3 = "thirdEmail@gmail.com";
+        account3.setEmail(email3);
+        account3.setId(1L);
+
+        account.setFriends(new HashSet<>(Arrays.asList(account2, account3)));
+
+        Mockito.when(accountRepository.findByEmail(email)).thenReturn(Optional.of(account));
+
+        assertThat(accountService.getFriendEmailsByEmail(email)).contains(email2, email3);
 
     }
 
