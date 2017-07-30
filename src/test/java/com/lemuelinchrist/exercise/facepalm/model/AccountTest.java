@@ -39,9 +39,9 @@ public class AccountTest {
     }
 
     @Test
-    public void accountsShouldBeAllowedToHaveManyFriends() {
-        Account firstAccount = accountRepository.findByEmail(FIRST_EMAIL);
-        Account secondAccount = accountRepository.findByEmail(SECOND_EMAIL);
+    public void accountsShouldBeAllowedToHaveManyFriends() throws Exception {
+        Account firstAccount = accountRepository.findByEmail(FIRST_EMAIL).orElseThrow(Exception::new);
+        Account secondAccount = accountRepository.findByEmail(SECOND_EMAIL).orElseThrow(Exception::new);
         firstAccount.addFriend(secondAccount);
         secondAccount.addFriend(firstAccount);
         accountRepository.save(firstAccount);
@@ -49,7 +49,7 @@ public class AccountTest {
 
         assertThat(firstAccount.getFriends()).contains(secondAccount);
         assertThat(secondAccount.getFriends()).contains(firstAccount);
-        assertThat(firstAccount.getFriends()).doesNotContain(accountRepository.findByEmail(THIRD_EMAIL));
+        assertThat(firstAccount.getFriends()).doesNotContain(accountRepository.findByEmail(THIRD_EMAIL).orElseThrow(Exception::new));
 
         firstAccount.addFriend(secondAccount);
         accountRepository.save(firstAccount);
