@@ -44,10 +44,9 @@ public class AccountManagementController {
      * ]
      * }
      * <p>
-     * the JSON response will return a { "success" : true }
      *
      * @param beFriendDTO A json object containing two email addresses
-     * @return
+     * @return the JSON response will return a { "success" : true }
      * @throws InvalidParameterException   will be thrown if the frinds list doesn't exactly have two emails, or if there is an
      *                                     empty email, or if there is a malformed email
      * @throws NonExistentAccountException The service will not accept emails that do not have a created account yet
