@@ -36,6 +36,7 @@ public class AccountTest {
         THIRD_EMAIL = "thirdEmail@facepalm.com";
         thirdAccount.setEmail(THIRD_EMAIL);
         accountRepository.save(thirdAccount);
+
     }
 
     @Test
@@ -59,8 +60,21 @@ public class AccountTest {
         assertThat(firstAccount.getFriends()).contains(thirdAccount, secondAccount);
         assertThat(thirdAccount.getFriends()).contains(firstAccount);
 
+        System.out.println("Hello " + accountRepository.findFriendEmailsByAccountEmail(FIRST_EMAIL));
 
 
+    }
+
+    @Test
+    public void shouldBeAbleToFindFriendEmailsByAccount() throws Exception {
+        Account firstAccount = accountRepository.findByEmail(FIRST_EMAIL).orElseThrow(Exception::new);
+        Account secondAccount = accountRepository.findByEmail(SECOND_EMAIL).orElseThrow(Exception::new);
+        Account thirdAccount = accountRepository.findByEmail(THIRD_EMAIL).orElseThrow(Exception::new);
+        firstAccount.addFriend(secondAccount);
+        firstAccount.addFriend(thirdAccount);
+        accountRepository.save(firstAccount);
+
+        assertThat(accountRepository.findFriendEmailsByAccountEmail(FIRST_EMAIL)).contains(SECOND_EMAIL, THIRD_EMAIL);
 
     }
 

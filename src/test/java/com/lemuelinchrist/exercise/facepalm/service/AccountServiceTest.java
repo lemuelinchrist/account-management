@@ -59,6 +59,7 @@ public class AccountServiceTest {
 
     }
 
+    // USER STORY 1
     @Test
     public void twoAccountsShouldBeAbleToBecomeFriends() throws Exception {
         Account firstAccount = new Account();
@@ -83,8 +84,9 @@ public class AccountServiceTest {
 
     }
 
+    // USER STORY 2
     @Test
-    public void accountShouldBeRetrieved() throws Exception {
+    public void friendEmailListShouldBeRetrieved() throws Exception {
         Account account = new Account();
         String email = "firstEmail@gmail.com";
         account.setEmail(email);
@@ -102,7 +104,7 @@ public class AccountServiceTest {
 
         account.setFriends(new HashSet<>(Arrays.asList(account2, account3)));
 
-        Mockito.when(accountRepository.findByEmail(email)).thenReturn(Optional.of(account));
+        Mockito.when(accountRepository.findFriendEmailsByAccountEmail(email)).thenReturn(Arrays.asList(email2, email3));
 
         assertThat(accountService.getFriendEmailsByEmail(email)).contains(email2, email3);
 
