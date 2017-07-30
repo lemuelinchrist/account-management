@@ -42,18 +42,26 @@ public class AccountTest {
     public void accountsShouldBeAllowedToHaveManyFriends() throws Exception {
         Account firstAccount = accountRepository.findByEmail(FIRST_EMAIL).orElseThrow(Exception::new);
         Account secondAccount = accountRepository.findByEmail(SECOND_EMAIL).orElseThrow(Exception::new);
+        Account thirdAccount = accountRepository.findByEmail(THIRD_EMAIL).orElseThrow(Exception::new);
         firstAccount.addFriend(secondAccount);
         secondAccount.addFriend(firstAccount);
-        accountRepository.save(firstAccount);
-        accountRepository.save(secondAccount);
+        firstAccount = accountRepository.save(firstAccount);
+        secondAccount = accountRepository.save(secondAccount);
 
         assertThat(firstAccount.getFriends()).contains(secondAccount);
         assertThat(secondAccount.getFriends()).contains(firstAccount);
         assertThat(firstAccount.getFriends()).doesNotContain(accountRepository.findByEmail(THIRD_EMAIL).orElseThrow(Exception::new));
 
-        firstAccount.addFriend(secondAccount);
-        accountRepository.save(firstAccount);
-        System.out.println("hello");
+        firstAccount.addFriend(thirdAccount);
+        thirdAccount.addFriend(firstAccount);
+        firstAccount = accountRepository.save(firstAccount);
+        thirdAccount = accountRepository.save(thirdAccount);
+        assertThat(firstAccount.getFriends()).containsExactly(thirdAccount, secondAccount);
+        assertThat(thirdAccount.getFriends()).containsExactly(firstAccount);
+
+
+
+
     }
 
 }

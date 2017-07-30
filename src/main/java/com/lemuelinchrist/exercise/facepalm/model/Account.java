@@ -53,7 +53,7 @@ public class Account {
     }
 
 
-    void addFriend(Account account) {
+    public void addFriend(Account account) {
         if (friends == null) {
             friends = new HashSet<>();
         }
@@ -61,7 +61,7 @@ public class Account {
 
     }
 
-    Set<Account> getFriends() {
+    public Set<Account> getFriends() {
         return friends;
     }
 
