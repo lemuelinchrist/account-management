@@ -26,8 +26,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @since 29/7/2017
  */
 @RunWith(SpringRunner.class)
-@WebMvcTest(value = AccountController.class, secure = false)
-public class AccountControllerTest {
+@WebMvcTest(value = AccountCRUDController.class, secure = false)
+public class AccountCRUDControllerTest {
 
 
     @Autowired

@@ -17,12 +17,12 @@ import java.net.URI;
  */
 @RestController
 @RequestMapping("/accounts")
-public class AccountController {
+public class AccountCRUDController {
 
     private AccountService accountService;
 
     @Autowired
-    public AccountController(AccountService accountService) {
+    public AccountCRUDController(AccountService accountService) {
         this.accountService = accountService;
     }
 
