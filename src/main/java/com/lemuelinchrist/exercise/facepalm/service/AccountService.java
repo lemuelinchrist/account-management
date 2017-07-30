@@ -1,5 +1,6 @@
 package com.lemuelinchrist.exercise.facepalm.service;
 
+import com.lemuelinchrist.exercise.facepalm.exception.ExistingEmailException;
 import com.lemuelinchrist.exercise.facepalm.model.Account;
 import com.lemuelinchrist.exercise.facepalm.model.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,8 @@ public class AccountService {
     }
 
 
-    public Long save(Account newAccount) {
+    public Long save(Account newAccount) throws ExistingEmailException {
+        if (accountRepository.findByEmail(newAccount.getEmail()).isPresent()) throw new ExistingEmailException();
         accountRepository.save(newAccount);
         return newAccount.getId();
     }

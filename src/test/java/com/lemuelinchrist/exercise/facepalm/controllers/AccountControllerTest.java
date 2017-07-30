@@ -1,7 +1,7 @@
 package com.lemuelinchrist.exercise.facepalm.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lemuelinchrist.exercise.facepalm.exception.ExistingEmailException;
 import com.lemuelinchrist.exercise.facepalm.model.Account;
 import com.lemuelinchrist.exercise.facepalm.service.AccountService;
 import org.junit.Assert;
@@ -19,7 +19,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Lemuel Cantos
@@ -37,7 +37,7 @@ public class AccountControllerTest {
     AccountService accountService;
 
     @Test
-    public void accountShouldBeCreated() throws Exception {
+    public void shouldBeCreated() throws Exception {
         Account newAccount = new Account();
         newAccount.setEmail("testEmail@gmail.com");
         newAccount.setId(1L);
@@ -57,7 +57,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    public void accountShouldBeRetrieved() throws Exception {
+    public void shouldBeRetrieved() throws Exception {
         Account newAccount = new Account();
         newAccount.setEmail("testEmail@gmail.com");
         newAccount.setId(1L);
@@ -73,7 +73,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    public void accountShouldNotHaveEmptyEmail() throws Exception {
+    public void shouldNotHaveEmptyEmail() throws Exception {
         Account newAccount = new Account();
         newAccount.setEmail("");
         newAccount.setId(1L);
@@ -90,7 +90,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    public void accountShouldNotHaveBadEmailFormat() throws Exception {
+    public void shouldNotHaveBadEmailFormat() throws Exception {
         Account newAccount = new Account();
         newAccount.setEmail("badEmailFormat");
         newAccount.setId(1L);
@@ -102,21 +102,31 @@ public class AccountControllerTest {
                 .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andReturn();
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
-    public String convertToJson(Object o) {
+    @Test
+    public void shouldNotHaveExistingEmail() throws Exception {
+        Account newAccount = new Account();
+        newAccount.setEmail("existingEmail@something.com");
+        newAccount.setId(1L);
+        Mockito.when(accountService.save(newAccount)).thenThrow(new ExistingEmailException());
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/accounts")
+                .accept(MediaType.APPLICATION_JSON).content(convertToJson(newAccount))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder)
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andReturn();
+        assertThat(result.getResponse().getErrorMessage()).containsIgnoringCase("exist");
+    }
+
+
+    public String convertToJson(Object o) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        //Object to JSON in String
-        try {
-            return mapper.writeValueAsString(o);
-
-        } catch (JsonProcessingException e) {
-
-            fail("error during json conversion: " + e.getMessage());
-        }
-        return null;
+        return mapper.writeValueAsString(o);
     }
 
 

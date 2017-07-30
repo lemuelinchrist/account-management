@@ -1,5 +1,6 @@
 package com.lemuelinchrist.exercise.facepalm.controllers;
 
+import com.lemuelinchrist.exercise.facepalm.exception.ExistingEmailException;
 import com.lemuelinchrist.exercise.facepalm.model.Account;
 import com.lemuelinchrist.exercise.facepalm.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class AccountController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    ResponseEntity<Account> create(@Valid @RequestBody Account newAccount) {
+    ResponseEntity<Account> create(@Valid @RequestBody Account newAccount) throws ExistingEmailException {
         Long id = accountService.save(newAccount);
         newAccount.setId(id);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path(

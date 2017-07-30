@@ -25,7 +25,7 @@ public class AccountServiceTest {
     AccountService accountService;
 
     @Test
-    public void accountShouldBeCreated() {
+    public void accountShouldBeCreated() throws Exception {
         Account newAccount = new Account();
         newAccount.setEmail("testEmail@gmail.com");
         newAccount.setId(1L);
