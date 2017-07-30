@@ -1,8 +1,10 @@
 package com.lemuelinchrist.exercise.facepalm.controllers;
 
 import com.lemuelinchrist.exercise.facepalm.controllers.dto.BeFriendDTO;
+import com.lemuelinchrist.exercise.facepalm.controllers.dto.FriendsDTO;
 import com.lemuelinchrist.exercise.facepalm.exception.InvalidParameterException;
 import com.lemuelinchrist.exercise.facepalm.exception.NonExistentAccountException;
+import com.lemuelinchrist.exercise.facepalm.model.Account;
 import com.lemuelinchrist.exercise.facepalm.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -59,6 +63,25 @@ public class AccountManagementController {
         Map<String, String> responseBody = new HashMap<>();
         responseBody.put("success", "true");
         return ResponseEntity.ok().body(responseBody);
+    }
+
+    /**
+     * USER STORY # 2
+     * This service retrieves the friends list for an account
+     * the request body should have the following structure:
+     * {
+     * email: 'something@email.com'
+     * }
+     *
+     * @param account a json request with an 'email' parameter
+     * @return returns json object with the following structure: {success: true, friends: ['email@email.com'], count:1 }
+     * @throws NonExistentAccountException The service will not accept emails that do not have a created account yet
+     */
+    @RequestMapping(value = "/get-friends", method = RequestMethod.GET)
+    public ResponseEntity<FriendsDTO> getFriends(@Valid @RequestBody Account account) throws NonExistentAccountException {
+        List<String> friends = accountService.getFriendEmailsByEmail(account.getEmail());
+        FriendsDTO friendsDTO = new FriendsDTO("true", friends, friends.size());
+        return ResponseEntity.ok().body(friendsDTO);
     }
 
 
