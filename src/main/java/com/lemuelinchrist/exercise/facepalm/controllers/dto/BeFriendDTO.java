@@ -1,5 +1,6 @@
 package com.lemuelinchrist.exercise.facepalm.controllers.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lemuelinchrist.exercise.facepalm.exception.InvalidParameterException;
 
 import java.util.List;
@@ -19,6 +20,16 @@ public class BeFriendDTO {
 
     public void setFriends(List<String> friends) {
         this.friends = friends;
+    }
+
+    @JsonIgnore
+    public String getFirstFriend() {
+        return friends.get(0);
+    }
+
+    @JsonIgnore
+    public String getSecondFriend() {
+        return friends.get(1);
     }
 
     public void checkValidity() throws InvalidParameterException {

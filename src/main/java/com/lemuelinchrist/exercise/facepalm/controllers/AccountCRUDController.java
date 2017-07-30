@@ -12,6 +12,7 @@ import javax.validation.Valid;
 import java.net.URI;
 
 /**
+ * REST Controller Specifically for CRUD functions of Accounts
  * @author Lemuel Cantos
  * @since 29/7/2017
  */

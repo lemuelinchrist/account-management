@@ -1,5 +1,6 @@
 package com.lemuelinchrist.exercise.facepalm.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -22,6 +23,7 @@ public class Account {
     @Email
     private String email;
 
+    @JsonIgnore //This needs to be excluded during json serialization because it will create an endless recursion
     @Column(unique = true)
     @ManyToMany(fetch = FetchType.LAZY)
     private Set<Account> friends;
