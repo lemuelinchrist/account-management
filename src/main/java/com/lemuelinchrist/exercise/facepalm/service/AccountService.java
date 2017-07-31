@@ -78,29 +78,34 @@ public class AccountService {
      * the given email.
      *
      * @param email The email of the account to be retreived.
-     * @return returns a set of friend emails.
+     * @return returns a list of friend emails.
      * @throws NonExistentAccountException Thrown if the email doesn't exist in the database.
      */
     public List<String> getFriendListByEmail(String email) throws NonExistentAccountException {
-        // check first if account exists
-        accountRepository.findByEmail(email).orElseThrow(NonExistentAccountException::new);
+        checkIfEmailExists(email);
 
         return accountRepository.findFriendListByEmail(email).orElseGet(ArrayList<String>::new);
     }
-//
-//    /**
-//     * USER STORY #3
-//     * This function will return a list of emails of COMMON friends of two Accounts
-//     *
-//     * @param email The email of the account to be retreived.
-//     * @return returns a set of friend emails.
-//     * @throws NonExistentAccountException Thrown if the email doesn't exist in the database.
-//     */
-//    public List<String> getCommonFriendsBetweenAccounts(String email) throws NonExistentAccountException {
-//        // check first if account exists
-//        accountRepository.findByEmail(email).orElseThrow(NonExistentAccountException::new);
-//
-//        return accountRepository.findFriendListByEmail(email).orElseGet(ArrayList<String>::new);
-//    }
+
+    /**
+     * USER STORY #3
+     * This function will return a list of emails of COMMON friends of two Accounts
+     *
+     * @param firstEmail  The first email to compare common friends.
+     * @param secondEmail The second email to compare common friends.
+     * @return returns a list of common friend emails.
+     * @throws NonExistentAccountException Thrown if the emails don't exist in the database.
+     */
+    public List<String> getCommonFriendsBetweenAccounts(String firstEmail, String secondEmail) throws NonExistentAccountException {
+        checkIfEmailExists(firstEmail);
+        checkIfEmailExists(secondEmail);
+
+        return accountRepository.findCommonFriendsBetweenAccounts(firstEmail, secondEmail).orElseGet(ArrayList<String>::new);
+    }
+
+    private void checkIfEmailExists(String email) throws NonExistentAccountException {
+        // check first if account exists
+        accountRepository.findByEmail(email).orElseThrow(NonExistentAccountException::new);
+    }
 
 }

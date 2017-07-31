@@ -83,7 +83,7 @@ public class AccountTest {
                 .contains(SECOND_EMAIL, THIRD_EMAIL);
         assertThat(accountRepository.findFriendListByEmail(SECOND_EMAIL).orElseThrow(Exception::new))
                 .contains(FIRST_EMAIL, THIRD_EMAIL);
-        assertThat(accountRepository.findCommonFriendEmailsByAccountEmail(FIRST_EMAIL, SECOND_EMAIL).orElseThrow(Exception::new))
+        assertThat(accountRepository.findCommonFriendsBetweenAccounts(FIRST_EMAIL, SECOND_EMAIL).orElseThrow(Exception::new))
                 .containsExactly(THIRD_EMAIL);
 
     }

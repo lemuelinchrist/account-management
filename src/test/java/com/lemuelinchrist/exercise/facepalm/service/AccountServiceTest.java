@@ -113,8 +113,9 @@ public class AccountServiceTest {
 
     }
 
+    // USER STORY 2
     @Test
-    public void friendEmailListOnNonexistenEmailShouldThrowException() throws Exception {
+    public void friendEmailListOnNonExistentEmailShouldThrowException() throws Exception {
         Account account = new Account();
         String email = "nonexistent@gmail.com";
         account.setEmail(email);
@@ -131,6 +132,55 @@ public class AccountServiceTest {
 
         assertThatThrownBy(() -> accountService.getFriendListByEmail(email));
 
+    }
+
+    // USER STORY 3
+    @Test
+    public void commonFriendEmailListOnNonExistentEmailsShouldThrowException() throws Exception {
+        Account account = new Account();
+        String email = "nonexistent@gmail.com";
+        account.setEmail(email);
+        account.setId(123L);
+
+        Account account2 = new Account();
+        String email2 = "secondNonexistentEmail@gmail.com";
+        account2.setEmail(email2);
+        account2.setId(1L);
+
+        Mockito.when(accountRepository.findByEmail(email)).thenReturn(Optional.empty());
+        Mockito.when(accountRepository.findByEmail(email2)).thenReturn(Optional.empty());
+        Mockito.when(accountRepository.findFriendListByEmail(email)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> accountService.getCommonFriendsBetweenAccounts(email, email2));
+
+    }
+
+    // USER STORY 3
+    @Test
+    public void commonFriendEmailListShouldBeRetrieved() throws Exception {
+
+        Account account1 = createNewAccount(1L, "somehtingNew@hotmail.com");
+        Account account2 = createNewAccount(2L, "somehtingNew2@hotmail.com");
+
+        String otherEmail1 = "other1@one.com";
+        String otherEmail2 = "another2@another.com";
+        List<String> friendList = Arrays.asList(otherEmail1, otherEmail2);
+
+        Mockito.when(accountRepository.findByEmail(account1.getEmail())).thenReturn(Optional.of(account1));
+        Mockito.when(accountRepository.findByEmail(account2.getEmail())).thenReturn(Optional.of(account2));
+        Mockito.when(accountRepository.findCommonFriendsBetweenAccounts(account1.getEmail(), account2.getEmail()))
+                .thenReturn(Optional.of(friendList));
+
+        assertThat(accountService.getCommonFriendsBetweenAccounts(account1.getEmail(), account2.getEmail())).contains(friendList.get(0), friendList.get(1));
+
+
+    }
+
+    private Account createNewAccount(long id, String email) {
+        Account account = new Account();
+        account.setEmail(email);
+        account.setId(id);
+        return account;
     }
 
 
