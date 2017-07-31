@@ -1,6 +1,6 @@
 package com.lemuelinchrist.exercise.facepalm.controllers;
 
-import com.lemuelinchrist.exercise.facepalm.controllers.dto.FriendRequestDTO;
+import com.lemuelinchrist.exercise.facepalm.controllers.dto.FriendPairRequestDTO;
 import com.lemuelinchrist.exercise.facepalm.controllers.dto.FriendResponseDTO;
 import com.lemuelinchrist.exercise.facepalm.exception.InvalidParameterException;
 import com.lemuelinchrist.exercise.facepalm.exception.NonExistentAccountException;
@@ -49,17 +49,17 @@ public class AccountManagementController {
      * }
      * <p>
      *
-     * @param friendRequestDTO A json object containing two email addresses
+     * @param friendPairRequestDTO A json object containing two email addresses
      * @return the JSON response will return a { "success" : true }
      * @throws InvalidParameterException   will be thrown if the frinds list doesn't exactly have two emails, or if there is an
      *                                     empty email, or if there is a malformed email
      * @throws NonExistentAccountException The service will not accept emails that do not have a created account yet
      */
     @RequestMapping(value = "/befriend", method = RequestMethod.POST)
-    public ResponseEntity<Map<String, String>> befriend(@RequestBody FriendRequestDTO friendRequestDTO) throws InvalidParameterException, NonExistentAccountException {
-        friendRequestDTO.checkValidity();
+    public ResponseEntity<Map<String, String>> befriend(@RequestBody FriendPairRequestDTO friendPairRequestDTO) throws InvalidParameterException, NonExistentAccountException {
+        friendPairRequestDTO.checkValidity();
 
-        accountService.befriendAccounts(friendRequestDTO.getFirstFriend(), friendRequestDTO.getSecondFriend());
+        accountService.befriendAccounts(friendPairRequestDTO.getFirstFriend(), friendPairRequestDTO.getSecondFriend());
 
         Map<String, String> responseBody = new HashMap<>();
         responseBody.put("success", "true");

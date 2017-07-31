@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  * @author Lemuel Cantos
  * @since 30/7/2017
  */
-public class FriendRequestDTO {
+public class FriendPairRequestDTO {
     private List<String> friends;
 
     public List<String> getFriends() {

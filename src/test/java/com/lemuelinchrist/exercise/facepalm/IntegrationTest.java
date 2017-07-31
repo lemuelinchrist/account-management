@@ -1,6 +1,6 @@
 package com.lemuelinchrist.exercise.facepalm;
 
-import com.lemuelinchrist.exercise.facepalm.controllers.dto.FriendRequestDTO;
+import com.lemuelinchrist.exercise.facepalm.controllers.dto.FriendPairRequestDTO;
 import com.lemuelinchrist.exercise.facepalm.controllers.dto.FriendResponseDTO;
 import com.lemuelinchrist.exercise.facepalm.model.Account;
 import org.junit.Test;
@@ -56,10 +56,10 @@ public class IntegrationTest {
         Account firstAccount = createAccount(firstEmail);
         Account secondAccount = createAccount(secondEmail);
 
-        FriendRequestDTO friendRequestDTO = new FriendRequestDTO();
-        friendRequestDTO.setFriends(Arrays.asList(firstEmail, secondEmail));
+        FriendPairRequestDTO friendPairRequestDTO = new FriendPairRequestDTO();
+        friendPairRequestDTO.setFriends(Arrays.asList(firstEmail, secondEmail));
 
-        HttpEntity<FriendRequestDTO> requestEntity = new HttpEntity<>(friendRequestDTO);
+        HttpEntity<FriendPairRequestDTO> requestEntity = new HttpEntity<>(friendPairRequestDTO);
         ResponseEntity<Map> responseEntity =
                 restTemplate.postForEntity("/account-management/befriend", requestEntity, Map.class);
         Map body = responseEntity.getBody();
@@ -68,8 +68,8 @@ public class IntegrationTest {
         // *** try adding a second friend
         String thirdEmail = "third@email.com";
         Account thirdAccount = createAccount(thirdEmail);
-        friendRequestDTO.setFriends(Arrays.asList(thirdEmail, firstEmail));
-        requestEntity = new HttpEntity<>(friendRequestDTO);
+        friendPairRequestDTO.setFriends(Arrays.asList(thirdEmail, firstEmail));
+        requestEntity = new HttpEntity<>(friendPairRequestDTO);
         responseEntity =
                 restTemplate.postForEntity("/account-management/befriend", requestEntity, Map.class);
         body = responseEntity.getBody();
