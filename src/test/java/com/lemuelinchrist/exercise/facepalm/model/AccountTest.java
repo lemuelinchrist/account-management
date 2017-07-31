@@ -39,6 +39,7 @@ public class AccountTest {
 
     }
 
+    // USER STORY 1
     @Test
     public void accountsShouldBeAllowedToHaveManyFriends() throws Exception {
         Account firstAccount = accountRepository.findByEmail(FIRST_EMAIL).orElseThrow(Exception::new);
@@ -65,8 +66,31 @@ public class AccountTest {
 
     }
 
+
+    // USER STORY 2
     @Test
     public void shouldBeAbleToFindFriendEmailsByAccount() throws Exception {
+        establishFriends();
+
+        assertThat(accountRepository.findFriendListByEmail(FIRST_EMAIL).orElseThrow(Exception::new))
+                .contains(SECOND_EMAIL, THIRD_EMAIL);
+        assertThat(accountRepository.findFriendListByEmail(SECOND_EMAIL).orElseThrow(Exception::new))
+                .contains(FIRST_EMAIL, THIRD_EMAIL);
+
+
+    }
+
+    // USER STORY 3
+    @Test
+    public void shouldBeAbleToFindCommonFriendEmailsByAccount() throws Exception {
+        establishFriends();
+
+        assertThat(accountRepository.findCommonFriendsBetweenAccounts(FIRST_EMAIL, SECOND_EMAIL).orElseThrow(Exception::new))
+                .containsExactly(THIRD_EMAIL);
+
+    }
+
+    private void establishFriends() throws Exception {
         Account firstAccount = accountRepository.findByEmail(FIRST_EMAIL).orElseThrow(Exception::new);
         Account secondAccount = accountRepository.findByEmail(SECOND_EMAIL).orElseThrow(Exception::new);
         Account thirdAccount = accountRepository.findByEmail(THIRD_EMAIL).orElseThrow(Exception::new);
@@ -78,14 +102,6 @@ public class AccountTest {
         secondAccount.addFriend(firstAccount);
         secondAccount.addFriend(thirdAccount);
         accountRepository.save(secondAccount);
-
-        assertThat(accountRepository.findFriendListByEmail(FIRST_EMAIL).orElseThrow(Exception::new))
-                .contains(SECOND_EMAIL, THIRD_EMAIL);
-        assertThat(accountRepository.findFriendListByEmail(SECOND_EMAIL).orElseThrow(Exception::new))
-                .contains(FIRST_EMAIL, THIRD_EMAIL);
-        assertThat(accountRepository.findCommonFriendsBetweenAccounts(FIRST_EMAIL, SECOND_EMAIL).orElseThrow(Exception::new))
-                .containsExactly(THIRD_EMAIL);
-
     }
 
 }
