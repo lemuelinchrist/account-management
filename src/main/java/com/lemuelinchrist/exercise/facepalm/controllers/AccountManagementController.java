@@ -4,6 +4,7 @@ import com.lemuelinchrist.exercise.facepalm.controllers.dto.FriendPairRequestDTO
 import com.lemuelinchrist.exercise.facepalm.controllers.dto.FriendResponseDTO;
 import com.lemuelinchrist.exercise.facepalm.controllers.dto.RequestorTargetDTO;
 import com.lemuelinchrist.exercise.facepalm.controllers.dto.SuccessResponseDTO;
+import com.lemuelinchrist.exercise.facepalm.exception.AlreadyBlockedException;
 import com.lemuelinchrist.exercise.facepalm.exception.AlreadySubscribedException;
 import com.lemuelinchrist.exercise.facepalm.exception.InvalidParameterException;
 import com.lemuelinchrist.exercise.facepalm.exception.NonExistentAccountException;
@@ -144,7 +145,25 @@ public class AccountManagementController {
         return ResponseEntity.ok().body(new SuccessResponseDTO());
     }
 
-
+    /**
+     * USER STORY #5
+     * This service will block a targetted Account such that the requestor will not see any Activity from the former anymore.
+     * If they are connected as friends, the requestor will no longer receive notifications from the target. If they are not connected
+     * as friends, then no new friends can be added.
+     *
+     * @param requestorTargetDTO
+     * @return the JSON response will return a { "success" : true }
+     * @throws InvalidParameterException   Thrown if any of the two emails are empty or if the email is malformed
+     * @throws AlreadyBlockedException     Thrown if requestor already blocked target before
+     * @throws NonExistentAccountException Thrown if any of the emails are not existent
+     */
+    @RequestMapping(value = "/block-account", method = RequestMethod.POST)
+    public ResponseEntity<SuccessResponseDTO> blockAccount(@RequestBody RequestorTargetDTO requestorTargetDTO)
+            throws InvalidParameterException, AlreadyBlockedException, NonExistentAccountException {
+        requestorTargetDTO.checkValidity();
+        accountService.blockAccount(requestorTargetDTO.getRequestor(), requestorTargetDTO.getTarget());
+        return ResponseEntity.ok().body(new SuccessResponseDTO());
+    }
 
 
 }
