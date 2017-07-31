@@ -32,7 +32,7 @@ public class Account {
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
-    private Set<Account> subscriptions;
+    private Set<Account> subscribers;
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
@@ -73,11 +73,11 @@ public class Account {
 
     }
 
-    public void addSubscription(Account account) {
-        if (subscriptions == null) {
-            subscriptions = new HashSet<>();
+    public void addSubscriber(Account account) {
+        if (subscribers == null) {
+            subscribers = new HashSet<>();
         }
-        subscriptions.add(account);
+        subscribers.add(account);
 
     }
 
@@ -97,12 +97,12 @@ public class Account {
         this.friends = friends;
     }
 
-    public Set<Account> getSubscriptions() {
-        return subscriptions;
+    public Set<Account> getSubscribers() {
+        return subscribers;
     }
 
-    public void setSubscriptions(Set<Account> subscriptions) {
-        this.subscriptions = subscriptions;
+    public void setSubscribers(Set<Account> subscribers) {
+        this.subscribers = subscribers;
     }
 
     public Set<Account> getBlockedAccounts() {

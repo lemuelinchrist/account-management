@@ -1,6 +1,7 @@
 package com.lemuelinchrist.exercise.facepalm.service;
 
 import com.lemuelinchrist.exercise.facepalm.FacepalmApplication;
+import com.lemuelinchrist.exercise.facepalm.exception.AlreadySubscribedException;
 import com.lemuelinchrist.exercise.facepalm.exception.ExistingEmailException;
 import com.lemuelinchrist.exercise.facepalm.model.Account;
 import com.lemuelinchrist.exercise.facepalm.model.AccountRepository;
@@ -173,6 +174,35 @@ public class AccountServiceTest {
 
         assertThat(accountService.getCommonFriendsBetweenAccounts(account1.getEmail(), account2.getEmail())).contains(friendList.get(0), friendList.get(1));
 
+
+    }
+
+    // USER STORY 4
+    @Test
+    public void targetShouldSubscribeToUpdateSuccesfully() throws Exception {
+        Account requestor = createNewAccount(1L, "somehtingNew@hotmail.com");
+        Account target = createNewAccount(2L, "somehtingNew2@hotmail.com");
+
+        Mockito.when(accountRepository.findByEmail(requestor.getEmail())).thenReturn(Optional.of(requestor));
+        Mockito.when(accountRepository.findByEmail(target.getEmail())).thenReturn(Optional.of(target));
+
+        target = accountService.subscribeToUpdates(requestor.getEmail(), target.getEmail());
+        assertThat(target.getSubscribers())
+                .hasSize(1)
+                .contains(requestor);
+    }
+
+    // USER STORY 4
+    @Test
+    public void shouldThrowExceptionIfAlreadySubscribed() throws Exception {
+        Account requestor = createNewAccount(1L, "somehtngNew@hotmail.com");
+        Account target = createNewAccount(2L, "somehtingNew2@hotmail.com");
+        target.addSubscriber(requestor);
+
+        Mockito.when(accountRepository.findByEmail(requestor.getEmail())).thenReturn(Optional.of(requestor));
+        Mockito.when(accountRepository.findByEmail(target.getEmail())).thenReturn(Optional.of(target));
+
+        assertThatThrownBy(() -> accountService.subscribeToUpdates(requestor.getEmail(), target.getEmail())).isInstanceOf(AlreadySubscribedException.class);
 
     }
 

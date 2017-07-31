@@ -4,12 +4,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * @author Lemuel Cantos
@@ -131,14 +129,14 @@ public class AccountTest {
 
         firstAccount.addBlockedAccount(fifthAccount);
         firstAccount.addBlockedAccount(sixthAccount);
-        firstAccount.addSubscription(secondAccount);
-        firstAccount.addSubscription(fourthAccount);
+        firstAccount.addSubscriber(secondAccount);
+        firstAccount.addSubscriber(fourthAccount);
         firstAccount = accountRepository.save(firstAccount);
         fifthAccount.addBlockedAccount(firstAccount);
         fifthAccount = accountRepository.save(fifthAccount);
 
         assertThat(firstAccount.getBlockedAccounts()).contains(fifthAccount, sixthAccount);
-        assertThat(firstAccount.getSubscriptions()).contains(fourthAccount);
+        assertThat(firstAccount.getSubscribers()).contains(fourthAccount);
         assertThat(fifthAccount.getBlockedAccounts()).contains(firstAccount);
 
 

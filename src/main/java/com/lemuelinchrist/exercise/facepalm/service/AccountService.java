@@ -1,5 +1,6 @@
 package com.lemuelinchrist.exercise.facepalm.service;
 
+import com.lemuelinchrist.exercise.facepalm.exception.AlreadySubscribedException;
 import com.lemuelinchrist.exercise.facepalm.exception.ExistingEmailException;
 import com.lemuelinchrist.exercise.facepalm.exception.NonExistentAccountException;
 import com.lemuelinchrist.exercise.facepalm.model.Account;
@@ -62,8 +63,8 @@ public class AccountService {
      * @throws NonExistentAccountException Thrown if Account in the emails don't exist
      */
     public List<Account> befriendAccounts(String firstEmail, String secondEmail) throws NonExistentAccountException {
-        Account firstAccount = accountRepository.findByEmail(firstEmail).orElseThrow(NonExistentAccountException::new);
-        Account secondAccount = accountRepository.findByEmail(secondEmail).orElseThrow(NonExistentAccountException::new);
+        Account firstAccount = checkIfEmailExistsAndGetAccount(firstEmail);
+        Account secondAccount = checkIfEmailExistsAndGetAccount(secondEmail);
         firstAccount.addFriend(secondAccount);
         secondAccount.addFriend(firstAccount);
         firstAccount = accountRepository.save(firstAccount);
@@ -82,9 +83,9 @@ public class AccountService {
      * @throws NonExistentAccountException Thrown if the email doesn't exist in the database.
      */
     public List<String> getFriendListByEmail(String email) throws NonExistentAccountException {
-        checkIfEmailExists(email);
+        checkIfEmailExistsAndGetAccount(email);
 
-        return accountRepository.findFriendListByEmail(email).orElseGet(ArrayList<String>::new);
+        return accountRepository.findFriendListByEmail(email).orElseGet(ArrayList::new);
     }
 
     /**
@@ -97,15 +98,40 @@ public class AccountService {
      * @throws NonExistentAccountException Thrown if the emails don't exist in the database.
      */
     public List<String> getCommonFriendsBetweenAccounts(String firstEmail, String secondEmail) throws NonExistentAccountException {
-        checkIfEmailExists(firstEmail);
-        checkIfEmailExists(secondEmail);
+        checkIfEmailExistsAndGetAccount(firstEmail);
+        checkIfEmailExistsAndGetAccount(secondEmail);
 
-        return accountRepository.findCommonFriendsBetweenAccounts(firstEmail, secondEmail).orElseGet(ArrayList<String>::new);
+        return accountRepository.findCommonFriendsBetweenAccounts(firstEmail, secondEmail).orElseGet(ArrayList::new);
     }
 
-    private void checkIfEmailExists(String email) throws NonExistentAccountException {
+    /**
+     * USER STORY #4
+     * This function will subscribe a requesting Account to the updates of another target Account such that any activity that
+     * the target account does will notify the subscribing Account. Both Accounts do not need to establish a friend connection.
+     *
+     * @param requestorEmail The email of the requesting Account
+     * @param targetEmail    The email of the Account to subscribe to
+     * @return the updated target Account
+     * @throws NonExistentAccountException Thrown if any of the emails do not exist in the database
+     * @throws AlreadySubscribedException  Thrown if the target already has requestor as subscriber
+     */
+    public Account subscribeToUpdates(String requestorEmail, String targetEmail) throws NonExistentAccountException, AlreadySubscribedException {
+        Account requestor = checkIfEmailExistsAndGetAccount(requestorEmail);
+        Account target = checkIfEmailExistsAndGetAccount(targetEmail);
+
+        if (target.getSubscribers() != null && target.getSubscribers().contains(requestor)) {
+            throw new AlreadySubscribedException();
+        }
+
+        target.addSubscriber(requestor);
+        accountRepository.save(target);
+
+        return target;
+    }
+
+    private Account checkIfEmailExistsAndGetAccount(String email) throws NonExistentAccountException {
         // check first if account exists
-        accountRepository.findByEmail(email).orElseThrow(NonExistentAccountException::new);
+        return accountRepository.findByEmail(email).orElseThrow(NonExistentAccountException::new);
     }
 
 }
