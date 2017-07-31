@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author Lemuel Cantos
@@ -14,8 +15,12 @@ import java.util.Optional;
 public interface AccountRepository extends JpaRepository<Account, Long> {
     Optional<Account> findByEmail(String email);
 
-    @Query(value = "select f.email from Account a join a.friends f where a.email = ?1")
+    @Query(value = "select f.email from Account a join a.friends f where a in (select a from Account a join a.friends f where a.email = ?1)")
     List<String> findFriendEmailsByAccountEmail(String email);
+
+    @Query(value = "select f.email from Account a join a.friends f where f.email in (select f.email from Account a join a.friends f where a.email = ?1) and f.email in (select f.email from Account a join a.friends f where a.email = ?2)")
+//    @Query(value = "select f.email from Account a join a.friends f where a.email = ?1 and ")
+    Set<String> findCommonFriendEmailsByAccountEmail(String firstEmail, String secondEmail);
 
 
 }

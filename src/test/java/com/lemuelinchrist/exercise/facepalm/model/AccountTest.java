@@ -74,7 +74,14 @@ public class AccountTest {
         firstAccount.addFriend(thirdAccount);
         accountRepository.save(firstAccount);
 
+        secondAccount = accountRepository.findByEmail(SECOND_EMAIL).orElseThrow(Exception::new);
+        secondAccount.addFriend(firstAccount);
+        secondAccount.addFriend(thirdAccount);
+        accountRepository.save(secondAccount);
+
         assertThat(accountRepository.findFriendEmailsByAccountEmail(FIRST_EMAIL)).contains(SECOND_EMAIL, THIRD_EMAIL);
+        assertThat(accountRepository.findFriendEmailsByAccountEmail(SECOND_EMAIL)).contains(FIRST_EMAIL, THIRD_EMAIL);
+        assertThat(accountRepository.findCommonFriendEmailsByAccountEmail(FIRST_EMAIL, SECOND_EMAIL)).containsExactly(THIRD_EMAIL);
 
     }
 
