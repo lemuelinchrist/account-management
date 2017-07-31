@@ -38,7 +38,7 @@ public class AccountManagementController {
     /**
      * USER STORY # 1
      * This Service will create a friend connection (befriend) between two email addresses.
-     * The Json Object will have the following structure:
+     * The Json request Object will have the following structure:
      * <p>
      * {
      * friends:
@@ -84,6 +84,37 @@ public class AccountManagementController {
         FriendResponseDTO friendResponseDTO = new FriendResponseDTO("true", friends, friends.size());
         return ResponseEntity.ok().body(friendResponseDTO);
     }
+
+    /**
+     * User Story # 3
+     * This service retrieves a common friends list between two email addresses
+     * The Json request object will have the following structure:
+     * {
+     * friends:
+     * [
+     * 'andy@example.com',
+     * 'john@example.com'
+     * ]
+     * }
+     *
+     * @param friendPairRequestDTO A json object containing two email addresses
+     * @return returns a json object with the following structure: {success: true, friends: ['email@email.com'], count:1 }
+     * @throws InvalidParameterException   will be thrown if the frinds list doesn't exactly have two emails, or if there is an
+     *                                     empty email, or if there is a malformed email
+     * @throws NonExistentAccountException The service will not accept emails that do not have a created account yet
+     */
+    @RequestMapping(value = "/get-common-friends", method = RequestMethod.POST)
+    public ResponseEntity<FriendResponseDTO> getCommonFriends(@RequestBody FriendPairRequestDTO friendPairRequestDTO)
+            throws InvalidParameterException, NonExistentAccountException {
+        friendPairRequestDTO.checkValidity();
+        List<String> commonFriends = accountService
+                .getCommonFriendsBetweenAccounts(friendPairRequestDTO.getFirstFriend(), friendPairRequestDTO.getSecondFriend());
+        FriendResponseDTO friendResponseDTO = new FriendResponseDTO("true", commonFriends, commonFriends.size());
+        return ResponseEntity.ok().body(friendResponseDTO);
+
+    }
+
+
 
 
 }

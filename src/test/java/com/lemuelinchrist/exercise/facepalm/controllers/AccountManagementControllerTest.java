@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -86,6 +87,35 @@ public class AccountManagementControllerTest {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post("/account-management/get-friends")
                 .accept(MediaType.APPLICATION_JSON).content(convertToJson(account))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success", is("true")))
+                .andExpect(jsonPath("$.friends", hasItem("first@email.com")))
+                .andExpect(jsonPath("$.friends", hasItem("second@email.com")))
+                .andExpect(jsonPath("$.friends", hasItem("third@email.com")))
+                .andExpect(jsonPath("$.count", is(friendList.size())))
+                .andReturn();
+    }
+
+    @Test
+    public void commonFriendListRequestShouldShowExactEmails() throws Exception {
+        Account account = new Account();
+        String email = "testEmail@gmail.com";
+        account.setEmail(email);
+        Account account2 = new Account();
+        String email2 = "testEmail2@gmail.com";
+        account2.setEmail(email2);
+
+        List<String> friendList = Arrays.asList("first@email.com", "second@email.com", "third@email.com");
+
+        FriendPairRequestDTO friendPairRequestDTO = new FriendPairRequestDTO(account.getEmail(), account2.getEmail());
+        Mockito.when(accountService.getCommonFriendsBetweenAccounts(account.getEmail(), account2.getEmail())).thenReturn(friendList);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/account-management/get-common-friends")
+                .accept(MediaType.APPLICATION_JSON).content(convertToJson(friendPairRequestDTO))
                 .contentType(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder)

@@ -53,27 +53,16 @@ public class IntegrationTest {
         String firstEmail = "firstAccount@yougotmail.com";
         String secondEmail = "secondAccount@yougotmail.com";
 
+        // *********** USER STORY 1
         Account firstAccount = createAccount(firstEmail);
         Account secondAccount = createAccount(secondEmail);
 
-        FriendPairRequestDTO friendPairRequestDTO = new FriendPairRequestDTO();
-        friendPairRequestDTO.setFriends(Arrays.asList(firstEmail, secondEmail));
-
-        HttpEntity<FriendPairRequestDTO> requestEntity = new HttpEntity<>(friendPairRequestDTO);
-        ResponseEntity<Map> responseEntity =
-                restTemplate.postForEntity("/account-management/befriend", requestEntity, Map.class);
-        Map body = responseEntity.getBody();
-        assertThat(body.get("success")).isEqualTo("true");
+        befriendAccounts(firstEmail, secondEmail);
 
         // *** try adding a second friend
         String thirdEmail = "third@email.com";
         Account thirdAccount = createAccount(thirdEmail);
-        friendPairRequestDTO.setFriends(Arrays.asList(thirdEmail, firstEmail));
-        requestEntity = new HttpEntity<>(friendPairRequestDTO);
-        responseEntity =
-                restTemplate.postForEntity("/account-management/befriend", requestEntity, Map.class);
-        body = responseEntity.getBody();
-        assertThat(body.get("success")).isEqualTo("true");
+        befriendAccounts(firstEmail, thirdEmail);
 
         // *********** USER STORY 2
         // *** lets get the list
@@ -87,7 +76,39 @@ public class IntegrationTest {
         assertThat(friendResponseDTO.getFriends()).contains(secondEmail, thirdEmail);
         assertThat(friendResponseDTO.getCount()).isEqualTo(2);
 
+        // ************* USER STORY 3
+        // create more accounts
+        Account fourthAccount = createAccount("fourth@simple.com");
+        Account fifthAccount = createAccount("fifth@responsibility.com");
+        befriendAccounts(firstEmail, fourthAccount.getEmail());
+        befriendAccounts(secondEmail, fourthAccount.getEmail());
+        befriendAccounts(firstEmail, fifthAccount.getEmail());
+        befriendAccounts(secondEmail, fifthAccount.getEmail());
 
+        HttpEntity<FriendPairRequestDTO> commonFriendListRequestEntity = new HttpEntity<>(new FriendPairRequestDTO(firstEmail, secondEmail));
+        ResponseEntity<FriendResponseDTO> commonFriendsDTOResponseEntity = restTemplate
+                .postForEntity("/account-management/get-common-friends", commonFriendListRequestEntity, FriendResponseDTO.class);
+        FriendResponseDTO commonFriendResponseDTO = commonFriendsDTOResponseEntity
+                .getBody();
+
+        assertThat(commonFriendResponseDTO.getSuccess()).isEqualToIgnoringCase("true");
+        assertThat(commonFriendResponseDTO.getFriends()).contains(fourthAccount.getEmail(), fifthAccount.getEmail());
+        assertThat(commonFriendResponseDTO.getFriends()).doesNotContain(thirdEmail);
+        assertThat(commonFriendResponseDTO.getCount()).isEqualTo(2);
+
+
+    }
+
+    private FriendPairRequestDTO befriendAccounts(String firstEmail, String secondEmail) {
+        FriendPairRequestDTO friendPairRequestDTO = new FriendPairRequestDTO();
+        friendPairRequestDTO.setFriends(Arrays.asList(firstEmail, secondEmail));
+
+        HttpEntity<FriendPairRequestDTO> requestEntity = new HttpEntity<>(friendPairRequestDTO);
+        ResponseEntity<Map> responseEntity =
+                restTemplate.postForEntity("/account-management/befriend", requestEntity, Map.class);
+        Map body = responseEntity.getBody();
+        assertThat(body.get("success")).isEqualTo("true");
+        return friendPairRequestDTO;
     }
 
 

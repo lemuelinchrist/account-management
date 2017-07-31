@@ -3,6 +3,8 @@ package com.lemuelinchrist.exercise.facepalm.controllers.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lemuelinchrist.exercise.facepalm.exception.InvalidParameterException;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,6 +17,14 @@ import java.util.regex.Pattern;
  */
 public class FriendPairRequestDTO {
     private List<String> friends;
+
+    public FriendPairRequestDTO() {
+
+    }
+
+    public FriendPairRequestDTO(String firstEmail, String secondEmail) {
+        friends = Arrays.asList(firstEmail, secondEmail);
+    }
 
     public List<String> getFriends() {
         return friends;
