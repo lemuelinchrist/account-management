@@ -16,11 +16,10 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     Optional<Account> findByEmail(String email);
 
     @Query(value = "select f.email from Account a join a.friends f where a in (select a from Account a join a.friends f where a.email = ?1)")
-    List<String> findFriendEmailsByAccountEmail(String email);
+    Optional<List<String>> findFriendEmailsByAccountEmail(String email);
 
-    @Query(value = "select f.email from Account a join a.friends f where f.email in (select f.email from Account a join a.friends f where a.email = ?1) and f.email in (select f.email from Account a join a.friends f where a.email = ?2)")
-//    @Query(value = "select f.email from Account a join a.friends f where a.email = ?1 and ")
-    Set<String> findCommonFriendEmailsByAccountEmail(String firstEmail, String secondEmail);
+    @Query(value = "select distinct f.email from Account a join a.friends f where f.email in (select f.email from Account a join a.friends f where a.email = ?1) and f.email in (select f.email from Account a join a.friends f where a.email = ?2)")
+    Optional<List<String>> findCommonFriendEmailsByAccountEmail(String firstEmail, String secondEmail);
 
 
 }

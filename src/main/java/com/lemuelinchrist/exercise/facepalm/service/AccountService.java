@@ -7,6 +7,7 @@ import com.lemuelinchrist.exercise.facepalm.model.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -76,11 +77,10 @@ public class AccountService {
      * @throws NonExistentAccountException Thrown if the email doesn't exist in the database.
      */
     public List<String> getFriendEmailsByEmail(String email) throws NonExistentAccountException {
+        // check first if account exists
+        accountRepository.findByEmail(email).orElseThrow(NonExistentAccountException::new);
 
-        return accountRepository.findFriendEmailsByAccountEmail(email);
+        return accountRepository.findFriendEmailsByAccountEmail(email).orElseGet(ArrayList<String>::new);
     }
 
-    private Set<Account> getFriends(String email) throws NonExistentAccountException {
-        return accountRepository.findByEmail(email).orElseThrow(NonExistentAccountException::new).getFriends();
-    }
 }
