@@ -2,7 +2,6 @@ package com.lemuelinchrist.exercise.facepalm.service;
 
 import com.lemuelinchrist.exercise.facepalm.FacepalmApplication;
 import com.lemuelinchrist.exercise.facepalm.exception.ExistingEmailException;
-import com.lemuelinchrist.exercise.facepalm.exception.NonExistentAccountException;
 import com.lemuelinchrist.exercise.facepalm.model.Account;
 import com.lemuelinchrist.exercise.facepalm.model.AccountRepository;
 import org.junit.Test;
@@ -107,10 +106,10 @@ public class AccountServiceTest {
         account.setFriends(new HashSet<>(Arrays.asList(account2, account3)));
 
         List<String> value = Arrays.asList(email2, email3);
-        Mockito.when(accountRepository.findFriendEmailsByAccountEmail(email)).thenReturn(Optional.of(value));
+        Mockito.when(accountRepository.findFriendListByEmail(email)).thenReturn(Optional.of(value));
         Mockito.when(accountRepository.findByEmail(email)).thenReturn(Optional.of(account));
 
-        assertThat(accountService.getFriendEmailsByEmail(email)).contains(email2, email3);
+        assertThat(accountService.getFriendListByEmail(email)).contains(email2, email3);
 
     }
 
@@ -128,9 +127,9 @@ public class AccountServiceTest {
         account.addFriend(account);
 
         Mockito.when(accountRepository.findByEmail(email)).thenReturn(Optional.empty());
-        Mockito.when(accountRepository.findFriendEmailsByAccountEmail(email)).thenReturn(Optional.empty());
+        Mockito.when(accountRepository.findFriendListByEmail(email)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> accountService.getFriendEmailsByEmail(email));
+        assertThatThrownBy(() -> accountService.getFriendListByEmail(email));
 
     }
 

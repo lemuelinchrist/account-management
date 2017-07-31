@@ -80,7 +80,7 @@ public class AccountManagementController {
      */
     @RequestMapping(value = "/get-friends", method = RequestMethod.POST)
     public ResponseEntity<FriendResponseDTO> getFriends(@Valid @RequestBody Account account) throws NonExistentAccountException {
-        List<String> friends = accountService.getFriendEmailsByEmail(account.getEmail());
+        List<String> friends = accountService.getFriendListByEmail(account.getEmail());
         FriendResponseDTO friendResponseDTO = new FriendResponseDTO("true", friends, friends.size());
         return ResponseEntity.ok().body(friendResponseDTO);
     }

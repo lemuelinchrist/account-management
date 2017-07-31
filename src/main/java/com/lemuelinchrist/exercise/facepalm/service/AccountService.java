@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Account Service is the Service bean that handles all kinds of management of Account from CRUD operations to querying.
@@ -82,11 +81,26 @@ public class AccountService {
      * @return returns a set of friend emails.
      * @throws NonExistentAccountException Thrown if the email doesn't exist in the database.
      */
-    public List<String> getFriendEmailsByEmail(String email) throws NonExistentAccountException {
+    public List<String> getFriendListByEmail(String email) throws NonExistentAccountException {
         // check first if account exists
         accountRepository.findByEmail(email).orElseThrow(NonExistentAccountException::new);
 
-        return accountRepository.findFriendEmailsByAccountEmail(email).orElseGet(ArrayList<String>::new);
+        return accountRepository.findFriendListByEmail(email).orElseGet(ArrayList<String>::new);
     }
+//
+//    /**
+//     * USER STORY #3
+//     * This function will return a list of emails of COMMON friends of two Accounts
+//     *
+//     * @param email The email of the account to be retreived.
+//     * @return returns a set of friend emails.
+//     * @throws NonExistentAccountException Thrown if the email doesn't exist in the database.
+//     */
+//    public List<String> getCommonFriendsBetweenAccounts(String email) throws NonExistentAccountException {
+//        // check first if account exists
+//        accountRepository.findByEmail(email).orElseThrow(NonExistentAccountException::new);
+//
+//        return accountRepository.findFriendListByEmail(email).orElseGet(ArrayList<String>::new);
+//    }
 
 }

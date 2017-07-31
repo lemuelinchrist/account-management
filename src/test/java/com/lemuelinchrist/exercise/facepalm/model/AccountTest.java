@@ -60,7 +60,7 @@ public class AccountTest {
         assertThat(firstAccount.getFriends()).contains(thirdAccount, secondAccount);
         assertThat(thirdAccount.getFriends()).contains(firstAccount);
 
-        System.out.println("Hello " + accountRepository.findFriendEmailsByAccountEmail(FIRST_EMAIL));
+        System.out.println("Hello " + accountRepository.findFriendListByEmail(FIRST_EMAIL));
 
 
     }
@@ -79,9 +79,9 @@ public class AccountTest {
         secondAccount.addFriend(thirdAccount);
         accountRepository.save(secondAccount);
 
-        assertThat(accountRepository.findFriendEmailsByAccountEmail(FIRST_EMAIL).orElseThrow(Exception::new))
+        assertThat(accountRepository.findFriendListByEmail(FIRST_EMAIL).orElseThrow(Exception::new))
                 .contains(SECOND_EMAIL, THIRD_EMAIL);
-        assertThat(accountRepository.findFriendEmailsByAccountEmail(SECOND_EMAIL).orElseThrow(Exception::new))
+        assertThat(accountRepository.findFriendListByEmail(SECOND_EMAIL).orElseThrow(Exception::new))
                 .contains(FIRST_EMAIL, THIRD_EMAIL);
         assertThat(accountRepository.findCommonFriendEmailsByAccountEmail(FIRST_EMAIL, SECOND_EMAIL).orElseThrow(Exception::new))
                 .containsExactly(THIRD_EMAIL);

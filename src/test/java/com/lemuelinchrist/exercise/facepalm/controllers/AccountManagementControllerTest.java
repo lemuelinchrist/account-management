@@ -81,7 +81,7 @@ public class AccountManagementControllerTest {
         account.setEmail(email);
         List<String> friendList = Arrays.asList("first@email.com", "second@email.com", "third@email.com");
 
-        Mockito.when(accountService.getFriendEmailsByEmail(email)).thenReturn(friendList);
+        Mockito.when(accountService.getFriendListByEmail(email)).thenReturn(friendList);
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post("/account-management/get-friends")
