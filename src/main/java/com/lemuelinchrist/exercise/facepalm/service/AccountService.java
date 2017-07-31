@@ -1,5 +1,6 @@
 package com.lemuelinchrist.exercise.facepalm.service;
 
+import com.lemuelinchrist.exercise.facepalm.exception.AlreadyBlockedException;
 import com.lemuelinchrist.exercise.facepalm.exception.AlreadySubscribedException;
 import com.lemuelinchrist.exercise.facepalm.exception.ExistingEmailException;
 import com.lemuelinchrist.exercise.facepalm.exception.NonExistentAccountException;
@@ -129,9 +130,30 @@ public class AccountService {
         return target;
     }
 
-//    public Account blockAccount(String requestorEmail, String targetEmail) throws NonExistentAccountException, AlreadyBlockedException {
-//
-//    }
+    /**
+     * USER STORY #5
+     * This function will block a targetted Account such that the requestor will not see any Activity from the former anymore.
+     * If they are connected as friends, the requestor will no longer receive notifications from the target. If they are not connected
+     * as friends, then no new friends can be added
+     *
+     * @param requestorEmail email of the account that will block an account
+     * @param targetEmail    email of the account to be blocked
+     * @return the updated requestor Account
+     * @throws NonExistentAccountException Thrown if any of the emails do not exist in the database
+     * @throws AlreadyBlockedException     Thrown if the requestor already has the target as one of its blocked accounts
+     */
+    public Account blockAccount(String requestorEmail, String targetEmail) throws NonExistentAccountException, AlreadyBlockedException {
+        Account requestor = checkIfEmailExistsAndGetAccount(requestorEmail);
+        Account target = checkIfEmailExistsAndGetAccount(targetEmail);
+
+        if (requestor.getBlockedAccounts() != null && requestor.getBlockedAccounts().contains(target)) {
+            throw new AlreadyBlockedException();
+        }
+        requestor.addBlockedAccount(target);
+        accountRepository.save(requestor);
+
+        return requestor;
+    }
 
     private Account checkIfEmailExistsAndGetAccount(String email) throws NonExistentAccountException {
         // check first if account exists

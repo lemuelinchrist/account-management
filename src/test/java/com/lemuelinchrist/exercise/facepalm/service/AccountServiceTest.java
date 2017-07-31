@@ -1,6 +1,7 @@
 package com.lemuelinchrist.exercise.facepalm.service;
 
 import com.lemuelinchrist.exercise.facepalm.FacepalmApplication;
+import com.lemuelinchrist.exercise.facepalm.exception.AlreadyBlockedException;
 import com.lemuelinchrist.exercise.facepalm.exception.AlreadySubscribedException;
 import com.lemuelinchrist.exercise.facepalm.exception.ExistingEmailException;
 import com.lemuelinchrist.exercise.facepalm.model.Account;
@@ -203,6 +204,35 @@ public class AccountServiceTest {
         Mockito.when(accountRepository.findByEmail(target.getEmail())).thenReturn(Optional.of(target));
 
         assertThatThrownBy(() -> accountService.subscribeToUpdates(requestor.getEmail(), target.getEmail())).isInstanceOf(AlreadySubscribedException.class);
+
+    }
+
+    // USER STORY 5
+    @Test
+    public void requestorShouldBlockSuccessfully() throws Exception {
+        Account requestor = createNewAccount(1L, "andSomehtingNew@hotmail.com");
+        Account target = createNewAccount(2L, "somehtingNew2@hotmail.com");
+
+        Mockito.when(accountRepository.findByEmail(requestor.getEmail())).thenReturn(Optional.of(requestor));
+        Mockito.when(accountRepository.findByEmail(target.getEmail())).thenReturn(Optional.of(target));
+
+        requestor = accountService.blockAccount(requestor.getEmail(), target.getEmail());
+        assertThat(requestor.getBlockedAccounts())
+                .hasSize(1)
+                .contains(target);
+    }
+
+    // USER STORY 5
+    @Test
+    public void shouldThrowExceptionIfAlreadyBlocked() throws Exception {
+        Account requestor = createNewAccount(1L, "somehtngNew21@hotmail.com");
+        Account target = createNewAccount(2L, "somehtingNew2@hotmail.com");
+        requestor.addBlockedAccount(target);
+
+        Mockito.when(accountRepository.findByEmail(requestor.getEmail())).thenReturn(Optional.of(requestor));
+        Mockito.when(accountRepository.findByEmail(target.getEmail())).thenReturn(Optional.of(target));
+
+        assertThatThrownBy(() -> accountService.blockAccount(requestor.getEmail(), target.getEmail())).isInstanceOf(AlreadyBlockedException.class);
 
     }
 
