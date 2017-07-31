@@ -259,6 +259,35 @@ public class AccountServiceTest {
 
     }
 
+    // USER STORY 6
+    @Test
+    public void allEmailsThatAreEligibleShouldBeListed() throws Exception {
+        Account account = new Account();
+        String email = "existent@gmail.com";
+        account.setEmail(email);
+        account.setId(123L);
+
+
+        String emailToBeBlocked = "tobeblocked@blocked.com";
+        Account accountToBeBlocked = new Account();
+        accountToBeBlocked.setEmail(emailToBeBlocked);
+
+        String someRandomEmail = "someRandom@account.com";
+        Account someRandomAccount = new Account();
+        someRandomAccount.setEmail(someRandomEmail);
+
+        List<String> friendsAndSubscribersList = Arrays.asList("hello@world.com", "byeWorld@wonderful.com", "lastEmail@gmamil.com", emailToBeBlocked);
+        List<Account> blacklist = Arrays.asList(someRandomAccount, accountToBeBlocked);
+
+        Mockito.when(accountRepository.findByEmail(email)).thenReturn(Optional.of(account));
+        Mockito.when(accountRepository.findFriendsAndSubscribersOf(email)).thenReturn(Optional.of(friendsAndSubscribersList));
+        Mockito.when(accountRepository.findByBlockedAccountsContaining(account)).thenReturn(Optional.of(blacklist));
+
+        assertThat(accountService.getBroadcastRecipientsOf(email)).contains("hello@world.com", "byeWorld@wonderful.com", "lastEmail@gmamil.com")
+                .doesNotContain(emailToBeBlocked);
+    }
+
+
     private Account createNewAccount(long id, String email) {
         Account account = new Account();
         account.setEmail(email);

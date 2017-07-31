@@ -91,19 +91,6 @@ public class AccountTest {
 
     }
 
-    private void establishFriends() throws Exception {
-        Account firstAccount = accountRepository.findByEmail(FIRST_EMAIL).orElseThrow(Exception::new);
-        Account secondAccount = accountRepository.findByEmail(SECOND_EMAIL).orElseThrow(Exception::new);
-        Account thirdAccount = accountRepository.findByEmail(THIRD_EMAIL).orElseThrow(Exception::new);
-        firstAccount.addFriend(secondAccount);
-        firstAccount.addFriend(thirdAccount);
-        accountRepository.save(firstAccount);
-
-        secondAccount = accountRepository.findByEmail(SECOND_EMAIL).orElseThrow(Exception::new);
-        secondAccount.addFriend(firstAccount);
-        secondAccount.addFriend(thirdAccount);
-        accountRepository.save(secondAccount);
-    }
 
     // USER STORY 4, and 5
     @Test
@@ -140,6 +127,66 @@ public class AccountTest {
         assertThat(fifthAccount.getBlockedAccounts()).contains(firstAccount);
 
 
+    }
+
+    // USER STORY 6
+    @Test
+    public void friendsAndSubscribersShouldBefound() throws Exception {
+        establishFriends();
+        Account firstAccount = accountRepository.findByEmail(FIRST_EMAIL).orElseThrow(Exception::new);
+        Account secondAccount = accountRepository.findByEmail(SECOND_EMAIL).orElseThrow(Exception::new);
+        Account thirdAccount = accountRepository.findByEmail(THIRD_EMAIL).orElseThrow(Exception::new);
+
+        Account fourthAccount = new Account();
+        String FOURTH_EMAIL = "fourthEmail@facepalm.com";
+        fourthAccount.setEmail(FOURTH_EMAIL);
+        accountRepository.save(fourthAccount);
+
+        Account fifthAccount = new Account();
+        String FIFTH_EMAIL = "fifthEmail@facepalm.com";
+        fifthAccount.setEmail(FIFTH_EMAIL);
+        accountRepository.save(fifthAccount);
+
+        Account sixthAccount = new Account();
+        String SIXTH_EMAIL = "sixthEmail@facepalm.com";
+        sixthAccount.setEmail(SIXTH_EMAIL);
+        accountRepository.save(sixthAccount);
+
+        firstAccount.addBlockedAccount(fifthAccount);
+        firstAccount.addBlockedAccount(sixthAccount);
+        firstAccount.addSubscriber(secondAccount);
+        firstAccount.addSubscriber(fourthAccount);
+        firstAccount = accountRepository.save(firstAccount);
+        fifthAccount.addBlockedAccount(firstAccount);
+        fifthAccount = accountRepository.save(fifthAccount);
+
+        thirdAccount.addBlockedAccount(firstAccount);
+        thirdAccount = accountRepository.save(thirdAccount);
+
+        assertThat(accountRepository.findFriendsAndSubscribersOf(FIRST_EMAIL).orElseThrow(Exception::new))
+                .hasSize(3)
+                .contains(secondAccount.getEmail(), thirdAccount.getEmail(), fourthAccount.getEmail());
+
+        assertThat(accountRepository.findByBlockedAccountsContaining(firstAccount).orElseThrow(Exception::new))
+                .hasSize(2)
+                .contains(thirdAccount, fifthAccount);
+
+
+    }
+
+
+    private void establishFriends() throws Exception {
+        Account firstAccount = accountRepository.findByEmail(FIRST_EMAIL).orElseThrow(Exception::new);
+        Account secondAccount = accountRepository.findByEmail(SECOND_EMAIL).orElseThrow(Exception::new);
+        Account thirdAccount = accountRepository.findByEmail(THIRD_EMAIL).orElseThrow(Exception::new);
+        firstAccount.addFriend(secondAccount);
+        firstAccount.addFriend(thirdAccount);
+        accountRepository.save(firstAccount);
+
+        secondAccount = accountRepository.findByEmail(SECOND_EMAIL).orElseThrow(Exception::new);
+        secondAccount.addFriend(firstAccount);
+        secondAccount.addFriend(thirdAccount);
+        accountRepository.save(secondAccount);
     }
 
 }

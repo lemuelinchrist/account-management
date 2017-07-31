@@ -6,9 +6,7 @@ import com.lemuelinchrist.exercise.facepalm.model.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * Account Service is the Service bean that handles all kinds of management of Account from CRUD operations to querying.
@@ -155,6 +153,32 @@ public class AccountService {
         accountRepository.save(requestor);
 
         return requestor;
+    }
+
+    /**
+     * USER STORY # 6
+     * This function retrieves email addresses that are eligible for receiving updates from a broadcaster.
+     * an email is eligible if:
+     * it wasn't blocked by the broadcaster
+     * it is friends with the broadcaster
+     * it subscribed updates with the broadcaster
+     *
+     * @param senderEmail the broadcaster
+     * @return list of all eligible emails
+     * @throws NonExistentAccountException throws when the email doesn't exist in the database
+     */
+    public List<String> getBroadcastRecipientsOf(String senderEmail) throws NonExistentAccountException {
+        Account sender = checkIfEmailExistsAndGetAccount(senderEmail);
+        // TODO: find a unified JPQL statement so we dont have to do the loop
+        Set<String> set = new HashSet<>(accountRepository.findFriendsAndSubscribersOf(senderEmail).orElseGet(ArrayList::new));
+        List<Account> blockedList = accountRepository.findByBlockedAccountsContaining(sender).orElseGet(ArrayList::new);
+        for (Account blockedAccount : blockedList) {
+            if (set.contains(blockedAccount.getEmail())) {
+                set.remove(blockedAccount.getEmail());
+            }
+        }
+
+        return new ArrayList<String>(set);
     }
 
     private Account checkIfEmailExistsAndGetAccount(String email) throws NonExistentAccountException {
