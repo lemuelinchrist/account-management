@@ -104,9 +104,22 @@ public class IntegrationTest {
         subscribeToAccount(thirdEmail, firstEmail);
         subscribeToAccount(thirdEmail, fifthAccount.getEmail());
 
-        firstAccount = getAccount(firstAccount.getId());
+        // ***************** USER STORY 5
+        // subscribe to a few accounts
+        subscribeToAccount(fifthAccount.getEmail(), fourthAccount.getEmail());
+        subscribeToAccount(fifthAccount.getEmail(), firstEmail);
+        subscribeToAccount(fifthAccount.getEmail(), secondEmail);
 
 
+    }
+
+    private void blockAccount(String requestorEmail, String targetEmail) {
+        HttpEntity<RequestorTargetDTO> subscriptionRequestEntity = new HttpEntity<>(new RequestorTargetDTO(requestorEmail, targetEmail));
+        ResponseEntity<SuccessResponseDTO> subscriptionResponse = restTemplate
+                .postForEntity("/account-management/block-account", subscriptionRequestEntity, SuccessResponseDTO.class);
+        SuccessResponseDTO successResponseDTO = subscriptionResponse
+                .getBody();
+        assertThat(successResponseDTO.getSuccess()).isEqualToIgnoringCase("true");
     }
 
     private void subscribeToAccount(String requestorEmail, String targetEmail) {
