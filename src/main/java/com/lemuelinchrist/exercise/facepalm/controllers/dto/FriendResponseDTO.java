@@ -6,19 +6,19 @@ import java.util.List;
  * @author Lemuel Cantos
  * @since 30/7/2017
  */
-public class FriendsDTO {
+public class FriendResponseDTO {
 
     private String success;
     private List<String> friends;
     private Integer count;
 
-    public FriendsDTO(String success, List<String> friends, Integer count) {
+    public FriendResponseDTO(String success, List<String> friends, Integer count) {
         this.success = success;
         this.friends = friends;
         this.count = count;
     }
 
-    public FriendsDTO() {
+    public FriendResponseDTO() {
 
     }
 

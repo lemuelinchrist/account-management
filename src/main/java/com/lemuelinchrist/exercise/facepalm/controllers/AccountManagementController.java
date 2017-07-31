@@ -1,7 +1,7 @@
 package com.lemuelinchrist.exercise.facepalm.controllers;
 
-import com.lemuelinchrist.exercise.facepalm.controllers.dto.BeFriendDTO;
-import com.lemuelinchrist.exercise.facepalm.controllers.dto.FriendsDTO;
+import com.lemuelinchrist.exercise.facepalm.controllers.dto.FriendRequestDTO;
+import com.lemuelinchrist.exercise.facepalm.controllers.dto.FriendResponseDTO;
 import com.lemuelinchrist.exercise.facepalm.exception.InvalidParameterException;
 import com.lemuelinchrist.exercise.facepalm.exception.NonExistentAccountException;
 import com.lemuelinchrist.exercise.facepalm.model.Account;
@@ -49,16 +49,16 @@ public class AccountManagementController {
      * }
      * <p>
      *
-     * @param beFriendDTO A json object containing two email addresses
+     * @param friendRequestDTO A json object containing two email addresses
      * @return the JSON response will return a { "success" : true }
      * @throws InvalidParameterException   will be thrown if the frinds list doesn't exactly have two emails, or if there is an
      *                                     empty email, or if there is a malformed email
      * @throws NonExistentAccountException The service will not accept emails that do not have a created account yet
      */
     @RequestMapping(value = "/befriend", method = RequestMethod.POST)
-    public ResponseEntity<Map<String, String>> befriend(@RequestBody BeFriendDTO beFriendDTO) throws InvalidParameterException, NonExistentAccountException {
-        beFriendDTO.checkValidity();
-        accountService.befriendAccounts(beFriendDTO.getFirstFriend(), beFriendDTO.getSecondFriend());
+    public ResponseEntity<Map<String, String>> befriend(@RequestBody FriendRequestDTO friendRequestDTO) throws InvalidParameterException, NonExistentAccountException {
+        friendRequestDTO.checkValidity();
+        accountService.befriendAccounts(friendRequestDTO.getFirstFriend(), friendRequestDTO.getSecondFriend());
 
         Map<String, String> responseBody = new HashMap<>();
         responseBody.put("success", "true");
@@ -78,10 +78,10 @@ public class AccountManagementController {
      * @throws NonExistentAccountException The service will not accept emails that do not have a created account yet
      */
     @RequestMapping(value = "/get-friends", method = RequestMethod.POST)
-    public ResponseEntity<FriendsDTO> getFriends(@Valid @RequestBody Account account) throws NonExistentAccountException {
+    public ResponseEntity<FriendResponseDTO> getFriends(@Valid @RequestBody Account account) throws NonExistentAccountException {
         List<String> friends = accountService.getFriendEmailsByEmail(account.getEmail());
-        FriendsDTO friendsDTO = new FriendsDTO("true", friends, friends.size());
-        return ResponseEntity.ok().body(friendsDTO);
+        FriendResponseDTO friendResponseDTO = new FriendResponseDTO("true", friends, friends.size());
+        return ResponseEntity.ok().body(friendResponseDTO);
     }
 
 

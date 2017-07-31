@@ -1,7 +1,7 @@
 package com.lemuelinchrist.exercise.facepalm;
 
-import com.lemuelinchrist.exercise.facepalm.controllers.dto.BeFriendDTO;
-import com.lemuelinchrist.exercise.facepalm.controllers.dto.FriendsDTO;
+import com.lemuelinchrist.exercise.facepalm.controllers.dto.FriendRequestDTO;
+import com.lemuelinchrist.exercise.facepalm.controllers.dto.FriendResponseDTO;
 import com.lemuelinchrist.exercise.facepalm.model.Account;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,10 +56,10 @@ public class IntegrationTest {
         Account firstAccount = createAccount(firstEmail);
         Account secondAccount = createAccount(secondEmail);
 
-        BeFriendDTO beFriendDTO = new BeFriendDTO();
-        beFriendDTO.setFriends(Arrays.asList(firstEmail, secondEmail));
+        FriendRequestDTO friendRequestDTO = new FriendRequestDTO();
+        friendRequestDTO.setFriends(Arrays.asList(firstEmail, secondEmail));
 
-        HttpEntity<BeFriendDTO> requestEntity = new HttpEntity<>(beFriendDTO);
+        HttpEntity<FriendRequestDTO> requestEntity = new HttpEntity<>(friendRequestDTO);
         ResponseEntity<Map> responseEntity =
                 restTemplate.postForEntity("/account-management/befriend", requestEntity, Map.class);
         Map body = responseEntity.getBody();
@@ -68,8 +68,8 @@ public class IntegrationTest {
         // *** try adding a second friend
         String thirdEmail = "third@email.com";
         Account thirdAccount = createAccount(thirdEmail);
-        beFriendDTO.setFriends(Arrays.asList(thirdEmail, firstEmail));
-        requestEntity = new HttpEntity<>(beFriendDTO);
+        friendRequestDTO.setFriends(Arrays.asList(thirdEmail, firstEmail));
+        requestEntity = new HttpEntity<>(friendRequestDTO);
         responseEntity =
                 restTemplate.postForEntity("/account-management/befriend", requestEntity, Map.class);
         body = responseEntity.getBody();
@@ -78,14 +78,14 @@ public class IntegrationTest {
         // *********** USER STORY 2
         // *** lets get the list
         HttpEntity<Account> friendListRequestEntity = new HttpEntity<>(firstAccount);
-        ResponseEntity<FriendsDTO> friendsDTOResponseEntity = restTemplate
-                .postForEntity("/account-management/get-friends", friendListRequestEntity, FriendsDTO.class);
-        FriendsDTO friendsDTO = friendsDTOResponseEntity
+        ResponseEntity<FriendResponseDTO> friendsDTOResponseEntity = restTemplate
+                .postForEntity("/account-management/get-friends", friendListRequestEntity, FriendResponseDTO.class);
+        FriendResponseDTO friendResponseDTO = friendsDTOResponseEntity
                 .getBody();
 
-        assertThat(friendsDTO.getSuccess()).isEqualToIgnoringCase("true");
-        assertThat(friendsDTO.getFriends()).contains(secondEmail, thirdEmail);
-        assertThat(friendsDTO.getCount()).isEqualTo(2);
+        assertThat(friendResponseDTO.getSuccess()).isEqualToIgnoringCase("true");
+        assertThat(friendResponseDTO.getFriends()).contains(secondEmail, thirdEmail);
+        assertThat(friendResponseDTO.getCount()).isEqualTo(2);
 
 
     }

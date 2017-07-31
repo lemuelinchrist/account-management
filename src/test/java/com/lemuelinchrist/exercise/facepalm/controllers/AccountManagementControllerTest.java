@@ -1,7 +1,7 @@
 package com.lemuelinchrist.exercise.facepalm.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lemuelinchrist.exercise.facepalm.controllers.dto.BeFriendDTO;
+import com.lemuelinchrist.exercise.facepalm.controllers.dto.FriendRequestDTO;
 import com.lemuelinchrist.exercise.facepalm.model.Account;
 import com.lemuelinchrist.exercise.facepalm.service.AccountService;
 import org.junit.Test;
@@ -99,11 +99,11 @@ public class AccountManagementControllerTest {
     }
 
     private RequestBuilder sendBefriendRequest(String firstEmail, String secondEmail) throws Exception {
-        BeFriendDTO beFriendDTO = new BeFriendDTO();
-        beFriendDTO.setFriends(Arrays.asList(firstEmail, secondEmail));
+        FriendRequestDTO friendRequestDTO = new FriendRequestDTO();
+        friendRequestDTO.setFriends(Arrays.asList(firstEmail, secondEmail));
         return MockMvcRequestBuilders
                 .post("/account-management/befriend")
-                .accept(MediaType.APPLICATION_JSON).content(convertToJson(beFriendDTO))
+                .accept(MediaType.APPLICATION_JSON).content(convertToJson(friendRequestDTO))
                 .contentType(MediaType.APPLICATION_JSON);
     }
 
