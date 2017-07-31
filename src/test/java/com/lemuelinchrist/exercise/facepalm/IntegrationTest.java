@@ -48,7 +48,7 @@ public class IntegrationTest {
      * @throws Exception
      */
     @Test
-    public void twoAccountsShouldBecomeFriends() throws Exception {
+    public void testAllUserStories() throws Exception {
         // *** create accounts
         String firstEmail = "firstAccount@yougotmail.com";
         String secondEmail = "secondAccount@yougotmail.com";
