@@ -27,9 +27,16 @@ public class Account {
     private String email;
 
     @JsonIgnore //This needs to be excluded during json serialization because it will create an endless recursion
-    @Column(unique = true)
     @ManyToMany(fetch = FetchType.LAZY)
     private Set<Account> friends;
+
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY)
+    private Set<Account> subscriptions;
+
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY)
+    private Set<Account> blockedAccounts;
 
     public String getEmail() {
         return email;
@@ -66,11 +73,43 @@ public class Account {
 
     }
 
+    public void addSubscription(Account account) {
+        if (subscriptions == null) {
+            subscriptions = new HashSet<>();
+        }
+        subscriptions.add(account);
+
+    }
+
+    public void addBlockedAccount(Account account) {
+        if (blockedAccounts == null) {
+            blockedAccounts = new HashSet<>();
+        }
+        blockedAccounts.add(account);
+
+    }
+
     public Set<Account> getFriends() {
         return friends;
     }
 
     public void setFriends(Set<Account> friends) {
         this.friends = friends;
+    }
+
+    public Set<Account> getSubscriptions() {
+        return subscriptions;
+    }
+
+    public void setSubscriptions(Set<Account> subscriptions) {
+        this.subscriptions = subscriptions;
+    }
+
+    public Set<Account> getBlockedAccounts() {
+        return blockedAccounts;
+    }
+
+    public void setBlockedAccounts(Set<Account> blockedAccounts) {
+        this.blockedAccounts = blockedAccounts;
     }
 }

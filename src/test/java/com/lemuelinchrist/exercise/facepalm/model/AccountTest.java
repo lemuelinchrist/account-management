@@ -4,10 +4,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 /**
  * @author Lemuel Cantos
  * @since 29/7/2017
@@ -102,6 +105,43 @@ public class AccountTest {
         secondAccount.addFriend(firstAccount);
         secondAccount.addFriend(thirdAccount);
         accountRepository.save(secondAccount);
+    }
+
+    // USER STORY 4, and 5
+    @Test
+    public void accountsShouldHaveSubscriptionsAndBlockers() throws Exception {
+        Account firstAccount = accountRepository.findByEmail(FIRST_EMAIL).orElseThrow(Exception::new);
+        Account secondAccount = accountRepository.findByEmail(SECOND_EMAIL).orElseThrow(Exception::new);
+        Account thirdAccount = accountRepository.findByEmail(THIRD_EMAIL).orElseThrow(Exception::new);
+
+        Account fourthAccount = new Account();
+        String FOURTH_EMAIL = "fourthEmail@facepalm.com";
+        fourthAccount.setEmail(FOURTH_EMAIL);
+        accountRepository.save(fourthAccount);
+
+        Account fifthAccount = new Account();
+        String FIFTH_EMAIL = "fifthEmail@facepalm.com";
+        fifthAccount.setEmail(FIFTH_EMAIL);
+        accountRepository.save(fifthAccount);
+
+        Account sixthAccount = new Account();
+        String SIXTH_EMAIL = "sixthEmail@facepalm.com";
+        sixthAccount.setEmail(SIXTH_EMAIL);
+        accountRepository.save(sixthAccount);
+
+        firstAccount.addBlockedAccount(fifthAccount);
+        firstAccount.addBlockedAccount(sixthAccount);
+        firstAccount.addSubscription(secondAccount);
+        firstAccount.addSubscription(fourthAccount);
+        firstAccount = accountRepository.save(firstAccount);
+        fifthAccount.addBlockedAccount(firstAccount);
+        fifthAccount = accountRepository.save(fifthAccount);
+
+        assertThat(firstAccount.getBlockedAccounts()).contains(fifthAccount, sixthAccount);
+        assertThat(firstAccount.getSubscriptions()).contains(fourthAccount);
+        assertThat(fifthAccount.getBlockedAccounts()).contains(firstAccount);
+
+
     }
 
 }
