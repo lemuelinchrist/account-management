@@ -30,6 +30,12 @@ public class AccountService {
     }
 
 
+    /**
+     * Gets Account according to the ID of the Account.
+     *
+     * @param id the ID of the account
+     * @return returns the instance of the Account with the corresponding ID
+     */
     public Account findOne(Long id) {
         return accountRepository.findOne(id);
     }

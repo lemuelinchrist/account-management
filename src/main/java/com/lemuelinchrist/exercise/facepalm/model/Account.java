@@ -9,6 +9,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * An Account represents a Facepalm user account that is able to make friends, subscribe to updates, and block updates
+ * similar to a Facebook application.
+ *
  * @author Lemuel Cantos
  * @since 29/7/2017
  */
