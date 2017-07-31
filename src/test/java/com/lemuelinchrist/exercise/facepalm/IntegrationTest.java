@@ -2,6 +2,8 @@ package com.lemuelinchrist.exercise.facepalm;
 
 import com.lemuelinchrist.exercise.facepalm.controllers.dto.FriendPairRequestDTO;
 import com.lemuelinchrist.exercise.facepalm.controllers.dto.FriendResponseDTO;
+import com.lemuelinchrist.exercise.facepalm.controllers.dto.RequestorTargetDTO;
+import com.lemuelinchrist.exercise.facepalm.controllers.dto.SuccessResponseDTO;
 import com.lemuelinchrist.exercise.facepalm.model.Account;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +45,7 @@ public class IntegrationTest {
     }
 
     /**
-     * USER STORY #1
+     * USER STORY #1 - #6
      *
      * @throws Exception
      */
@@ -96,7 +98,24 @@ public class IntegrationTest {
         assertThat(commonFriendResponseDTO.getFriends()).doesNotContain(thirdEmail);
         assertThat(commonFriendResponseDTO.getCount()).isEqualTo(2);
 
+        // ***************** USER STORY 4
+        // subscribe to a few accounts
+        subscribeToAccount(thirdEmail, fourthAccount.getEmail());
+        subscribeToAccount(thirdEmail, firstEmail);
+        subscribeToAccount(thirdEmail, fifthAccount.getEmail());
 
+        firstAccount = getAccount(firstAccount.getId());
+
+
+    }
+
+    private void subscribeToAccount(String requestorEmail, String targetEmail) {
+        HttpEntity<RequestorTargetDTO> subscriptionRequestEntity = new HttpEntity<>(new RequestorTargetDTO(requestorEmail, targetEmail));
+        ResponseEntity<SuccessResponseDTO> subscriptionResponse = restTemplate
+                .postForEntity("/account-management/subscribe-updates", subscriptionRequestEntity, SuccessResponseDTO.class);
+        SuccessResponseDTO successResponseDTO = subscriptionResponse
+                .getBody();
+        assertThat(successResponseDTO.getSuccess()).isEqualToIgnoringCase("true");
     }
 
     private FriendPairRequestDTO befriendAccounts(String firstEmail, String secondEmail) {
@@ -124,6 +143,10 @@ public class IntegrationTest {
         assertThat(createdAccount.getId()).isNotNull();
 
         return createdAccount;
+    }
+
+    private Account getAccount(Long accountId) {
+        return restTemplate.getForEntity("/accounts/" + accountId, Account.class).getBody();
     }
 
 

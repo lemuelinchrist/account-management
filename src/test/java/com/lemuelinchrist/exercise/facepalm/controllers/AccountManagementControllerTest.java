@@ -2,13 +2,14 @@ package com.lemuelinchrist.exercise.facepalm.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lemuelinchrist.exercise.facepalm.controllers.dto.FriendPairRequestDTO;
+import com.lemuelinchrist.exercise.facepalm.controllers.dto.RequestorTargetDTO;
+import com.lemuelinchrist.exercise.facepalm.exception.AlreadySubscribedException;
 import com.lemuelinchrist.exercise.facepalm.model.Account;
 import com.lemuelinchrist.exercise.facepalm.service.AccountService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -126,6 +127,56 @@ public class AccountManagementControllerTest {
                 .andExpect(jsonPath("$.friends", hasItem("third@email.com")))
                 .andExpect(jsonPath("$.count", is(friendList.size())))
                 .andReturn();
+    }
+
+    @Test
+    public void requestUpdateShouldRegisterSuccessfully() throws Exception {
+        Account account = new Account();
+        String email = "testEmail@gmail.com";
+        account.setEmail(email);
+        Account account2 = new Account();
+        String email2 = "testEmail2@gmail.com";
+        account2.setEmail(email2);
+
+
+        RequestorTargetDTO requestorTargetDTO = new RequestorTargetDTO(account.getEmail(), account2.getEmail());
+        Mockito.when(accountService.subscribeToUpdates(account.getEmail(), account2.getEmail())).thenReturn(account2);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/account-management/subscribe-updates")
+                .accept(MediaType.APPLICATION_JSON).content(convertToJson(requestorTargetDTO))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success", is("true")))
+                .andReturn();
+    }
+
+    @Test
+    public void requestUpdateWithAlreadySubscribedAccountWillThrowError() throws Exception {
+        Account account = new Account();
+        String email = "testEmail@gmail.com";
+        account.setEmail(email);
+        Account account2 = new Account();
+        String email2 = "testEmail2@gmadil.com";
+        account2.setEmail(email2);
+        account2.addSubscriber(account);
+
+
+        RequestorTargetDTO requestorTargetDTO = new RequestorTargetDTO(account.getEmail(), account2.getEmail());
+        Mockito.when(accountService.subscribeToUpdates(account.getEmail(), account2.getEmail())).thenThrow(AlreadySubscribedException.class);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/account-management/subscribe-updates")
+                .accept(MediaType.APPLICATION_JSON).content(convertToJson(requestorTargetDTO))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder)
+                .andExpect(status().isBadRequest())
+                .andReturn();
+        assertThat(result.getResponse().getErrorMessage()).containsIgnoringCase("already");
+
     }
 
     private RequestBuilder sendBefriendRequest(String firstEmail, String secondEmail) throws Exception {

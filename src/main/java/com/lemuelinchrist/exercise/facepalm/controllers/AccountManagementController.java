@@ -2,6 +2,9 @@ package com.lemuelinchrist.exercise.facepalm.controllers;
 
 import com.lemuelinchrist.exercise.facepalm.controllers.dto.FriendPairRequestDTO;
 import com.lemuelinchrist.exercise.facepalm.controllers.dto.FriendResponseDTO;
+import com.lemuelinchrist.exercise.facepalm.controllers.dto.RequestorTargetDTO;
+import com.lemuelinchrist.exercise.facepalm.controllers.dto.SuccessResponseDTO;
+import com.lemuelinchrist.exercise.facepalm.exception.AlreadySubscribedException;
 import com.lemuelinchrist.exercise.facepalm.exception.InvalidParameterException;
 import com.lemuelinchrist.exercise.facepalm.exception.NonExistentAccountException;
 import com.lemuelinchrist.exercise.facepalm.model.Account;
@@ -40,13 +43,13 @@ public class AccountManagementController {
      * This Service will create a friend connection (befriend) between two email addresses.
      * The Json request Object will have the following structure:
      * <p>
-     * {
+     * <code>{
      * friends:
      * [
      * 'andy@example.com',
      * 'john@example.com'
      * ]
-     * }
+     * }</code>
      * <p>
      *
      * @param friendPairRequestDTO A json object containing two email addresses
@@ -70,9 +73,9 @@ public class AccountManagementController {
      * USER STORY # 2
      * This service retrieves the friends list for an account
      * the request body should have the following structure:
-     * {
+     * <code>{
      * email: 'something@email.com'
-     * }
+     * }</code>
      *
      * @param account a json request with an 'email' parameter
      * @return returns json object with the following structure: {success: true, friends: ['email@email.com'], count:1 }
@@ -87,15 +90,15 @@ public class AccountManagementController {
 
     /**
      * User Story # 3
-     * This service retrieves a common friends list between two email addresses
+     * This service retrieves a common friends list between two email addresses.
      * The Json request object will have the following structure:
-     * {
+     * <code>{
      * friends:
      * [
      * 'andy@example.com',
      * 'john@example.com'
      * ]
-     * }
+     * }</code>
      *
      * @param friendPairRequestDTO A json object containing two email addresses
      * @return returns a json object with the following structure: {success: true, friends: ['email@email.com'], count:1 }
@@ -112,6 +115,33 @@ public class AccountManagementController {
         FriendResponseDTO friendResponseDTO = new FriendResponseDTO("true", commonFriends, commonFriends.size());
         return ResponseEntity.ok().body(friendResponseDTO);
 
+    }
+
+    /**
+     * USER STORY # 4
+     * This service subscribes an Account to another Account's updates. Note that this is not equivalent to "befriending".
+     * An account can still subscribe to another regardless of friendship status.
+     * The Json request object will have the following structure:
+     * <p>
+     * <code>
+     * {
+     * "requestor": "lisa@example.com",
+     * "target": "john@example.com"
+     * }</code>
+     *
+     * @param requestorTargetDTO a Json Object containing a requestor and a target. a target is the Account the requestor will be
+     *                           subscribed to
+     * @return the JSON response will return a { "success" : true }
+     * @throws InvalidParameterException   Thrown if any of the two emails are empty or if the email is malformed
+     * @throws AlreadySubscribedException  Thrown if requestor is already subscribed to target
+     * @throws NonExistentAccountException Thrown if any of the emails are not existent
+     */
+    @RequestMapping(value = "/subscribe-updates", method = RequestMethod.POST)
+    public ResponseEntity<SuccessResponseDTO> subscribeUpdates(@RequestBody RequestorTargetDTO requestorTargetDTO)
+            throws InvalidParameterException, AlreadySubscribedException, NonExistentAccountException {
+        requestorTargetDTO.checkValidity();
+        accountService.subscribeToUpdates(requestorTargetDTO.getRequestor(), requestorTargetDTO.getTarget());
+        return ResponseEntity.ok().body(new SuccessResponseDTO());
     }
 
 

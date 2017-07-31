@@ -10,6 +10,15 @@ public class RequestorTargetDTO extends RequestDTO {
     private String requestor;
     private String target;
 
+    public RequestorTargetDTO() {
+
+    }
+
+    public RequestorTargetDTO(String requestor, String target) {
+        this.requestor = requestor;
+        this.target = target;
+    }
+
     public String getRequestor() {
         return requestor;
     }
