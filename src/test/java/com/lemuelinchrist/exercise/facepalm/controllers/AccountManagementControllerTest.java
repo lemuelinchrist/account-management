@@ -3,6 +3,7 @@ package com.lemuelinchrist.exercise.facepalm.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lemuelinchrist.exercise.facepalm.controllers.dto.FriendPairRequestDTO;
 import com.lemuelinchrist.exercise.facepalm.controllers.dto.RequestorTargetDTO;
+import com.lemuelinchrist.exercise.facepalm.controllers.dto.SenderDTO;
 import com.lemuelinchrist.exercise.facepalm.exception.AlreadyBlockedException;
 import com.lemuelinchrist.exercise.facepalm.exception.AlreadySubscribedException;
 import com.lemuelinchrist.exercise.facepalm.model.Account;
@@ -43,7 +44,7 @@ public class AccountManagementControllerTest {
     @MockBean
     AccountService accountService;
 
-    // USE CASE 1
+    // USER STORY 1
     @Test
     public void befriendRequestShouldBefriendTwoAccountsWithProperEmails() throws Exception {
         String firstEmail = "good@email.com";
@@ -58,7 +59,7 @@ public class AccountManagementControllerTest {
 
     }
 
-    // USE CASE 1
+    // USER STORY 1
     @Test
     public void befriendRequestShouldNotAllowBadParameters() throws Exception {
 
@@ -79,7 +80,7 @@ public class AccountManagementControllerTest {
 
     }
 
-    // USE CASE 2
+    // USER STORY 2
     @Test
     public void friendListRequestShouldShowExactEmails() throws Exception {
         Account account = new Account();
@@ -104,7 +105,7 @@ public class AccountManagementControllerTest {
                 .andReturn();
     }
 
-    // USE CASE 3
+    // USER STORY 3
     @Test
     public void commonFriendListRequestShouldShowExactEmails() throws Exception {
         Account account = new Account();
@@ -134,7 +135,7 @@ public class AccountManagementControllerTest {
                 .andReturn();
     }
 
-    // USE CASE 4
+    // USER STORY 4
     @Test
     public void requestUpdateShouldRegisterSuccessfully() throws Exception {
         Account account = new Account();
@@ -159,7 +160,7 @@ public class AccountManagementControllerTest {
                 .andReturn();
     }
 
-    // USE CASE 4
+    // USER STORY 4
     @Test
     public void requestUpdateWithAlreadySubscribedAccountWillThrowError() throws Exception {
         Account account = new Account();
@@ -186,7 +187,7 @@ public class AccountManagementControllerTest {
 
     }
 
-    // USE CASE 5
+    // USER STORY 5
     @Test
     public void blockingAnAccountShouldRegisterSuccessfully() throws Exception {
         Account account = new Account();
@@ -211,7 +212,7 @@ public class AccountManagementControllerTest {
                 .andReturn();
     }
 
-    // USE CASE 5
+    // USER STORY 5
     @Test
     public void blockingAnAccountThatIsAlreadyBlockedWillThrowError() throws Exception {
         Account account = new Account();
@@ -236,6 +237,38 @@ public class AccountManagementControllerTest {
                 .andReturn();
         assertThat(result.getResponse().getErrorMessage()).containsIgnoringCase("already");
 
+    }
+
+    // USER STORY 6
+    @Test
+    public void emailRecipientListForBroadcastShouldBeGenerated() throws Exception {
+        Account account = new Account();
+        String email = "testEmail@gmail.com";
+        account.setEmail(email);
+
+        List<String> friendsAndSubscribersList = Arrays.asList("hello@world.com", "byeWorld@wonderful.com", "lastEmail@gmamil.com");
+
+
+        String emailInText1 = "lemuel@cantos.com";
+        String emailInText2 = "cantos@lemuel.com";
+        SenderDTO senderDTO = new SenderDTO(account.getEmail(), "This is a test message with " + emailInText1 + " and " + emailInText2 + " email in the middle");
+        Mockito.when(accountService.getBroadcastRecipientsOf(account.getEmail())).thenReturn(friendsAndSubscribersList);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/account-management/get-update-recipients")
+                .accept(MediaType.APPLICATION_JSON).content(convertToJson(senderDTO))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success", is("true")))
+                .andExpect(jsonPath("$.friends", hasItem("hello@world.com")))
+                .andExpect(jsonPath("$.friends", hasItem("byeWorld@wonderful.com")))
+                .andExpect(jsonPath("$.friends", hasItem("lastEmail@gmamil.com")))
+                .andExpect(jsonPath("$.friends", hasItem(emailInText1)))
+                .andExpect(jsonPath("$.friends", hasItem(emailInText2)))
+                .andExpect(jsonPath("$.count", is(5)))
+                .andReturn();
     }
 
     private RequestBuilder sendBefriendRequest(String firstEmail, String secondEmail) throws Exception {

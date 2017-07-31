@@ -1,9 +1,6 @@
 package com.lemuelinchrist.exercise.facepalm.controllers;
 
-import com.lemuelinchrist.exercise.facepalm.controllers.dto.FriendPairRequestDTO;
-import com.lemuelinchrist.exercise.facepalm.controllers.dto.FriendResponseDTO;
-import com.lemuelinchrist.exercise.facepalm.controllers.dto.RequestorTargetDTO;
-import com.lemuelinchrist.exercise.facepalm.controllers.dto.SuccessResponseDTO;
+import com.lemuelinchrist.exercise.facepalm.controllers.dto.*;
 import com.lemuelinchrist.exercise.facepalm.exception.*;
 import com.lemuelinchrist.exercise.facepalm.model.Account;
 import com.lemuelinchrist.exercise.facepalm.service.AccountService;
@@ -15,9 +12,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Account Management Controller for the User Stories of this Project.
@@ -55,7 +55,7 @@ public class AccountManagementController {
      * @throws InvalidParameterException   will be thrown if the frinds list doesn't exactly have two emails, or if there is an
      *                                     empty email, or if there is a malformed email
      * @throws NonExistentAccountException The service will not accept emails that do not have a created account yet
-     * @throws AccountBlockedException Thrown when one Account is blocking another
+     * @throws AccountBlockedException     Thrown when one Account is blocking another
      */
     @RequestMapping(value = "/befriend", method = RequestMethod.POST)
     public ResponseEntity<Map<String, String>> befriend(@RequestBody FriendPairRequestDTO friendPairRequestDTO)
@@ -146,11 +146,17 @@ public class AccountManagementController {
 
     /**
      * USER STORY #5
-     * This service will block a targetted Account such that the requestor will not see any Activity from the former anymore.
+     * This service will block a targeted Account such that the requestor will not see any Activity from the former anymore.
      * If they are connected as friends, the requestor will no longer receive notifications from the target. If they are not connected
      * as friends, then no new friends can be added.
+     * <p>
+     * the json request is as follows:
+     * <code>{
+     * "requestor": "andy@example.com",
+     * "target": "john@example.com"
+     * }</code>
      *
-     * @param requestorTargetDTO
+     * @param requestorTargetDTO the json object request
      * @return the JSON response will return a { "success" : true }
      * @throws InvalidParameterException   Thrown if any of the two emails are empty or if the email is malformed
      * @throws AlreadyBlockedException     Thrown if requestor already blocked target before
@@ -162,6 +168,51 @@ public class AccountManagementController {
         requestorTargetDTO.checkValidity();
         accountService.blockAccount(requestorTargetDTO.getRequestor(), requestorTargetDTO.getTarget());
         return ResponseEntity.ok().body(new SuccessResponseDTO());
+    }
+
+    /**
+     * USER STORY #6
+     * This service retrieves email addresses that are eligible for receiving updates from a broadcaster.
+     * an email is eligible if:
+     * it wasn't blocked by the broadcaster
+     * it is friends with the broadcaster
+     * it subscribed updates with the broadcaster
+     * <p>
+     * the json request has the following structure:
+     * <code>{
+     * "sender": "john@example.com",
+     * "text": "Hello World! kate@example.com"
+     * }</code>
+     * <p>
+     * The response has the following structure:
+     * <code>{
+     * "success": true
+     * "recipients":
+     * [
+     * "lisa@example.com",
+     * "kate@example.com"
+     * ]
+     * }</code>
+     *
+     * @param senderDTO the json object request
+     * @return a list of eligible recipients to receive broadcast
+     * @throws NonExistentAccountException Thrown if email doesn't exist in the database
+     * @throws InvalidParameterException   Thrown if email in the request is malformed or empty
+     */
+    @RequestMapping(value = "/get-update-recipients", method = RequestMethod.POST)
+    public ResponseEntity<FriendResponseDTO> getUpdateRecipients(@RequestBody SenderDTO senderDTO)
+            throws NonExistentAccountException, InvalidParameterException {
+        senderDTO.checkValidity();
+        List<String> sendingList = accountService.getBroadcastRecipientsOf(senderDTO.getSender());
+        List<String> finalList = new ArrayList<>(sendingList);
+
+        Matcher m = Pattern.compile("[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+").matcher(senderDTO.getText());
+        while (m.find()) {
+            finalList.add(m.group());
+        }
+
+        FriendResponseDTO friendResponseDTO = new FriendResponseDTO("true", finalList, finalList.size());
+        return ResponseEntity.ok().body(friendResponseDTO);
     }
 
 
