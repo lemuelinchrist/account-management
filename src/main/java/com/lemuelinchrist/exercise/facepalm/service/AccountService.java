@@ -1,9 +1,6 @@
 package com.lemuelinchrist.exercise.facepalm.service;
 
-import com.lemuelinchrist.exercise.facepalm.exception.AlreadyBlockedException;
-import com.lemuelinchrist.exercise.facepalm.exception.AlreadySubscribedException;
-import com.lemuelinchrist.exercise.facepalm.exception.ExistingEmailException;
-import com.lemuelinchrist.exercise.facepalm.exception.NonExistentAccountException;
+import com.lemuelinchrist.exercise.facepalm.exception.*;
 import com.lemuelinchrist.exercise.facepalm.model.Account;
 import com.lemuelinchrist.exercise.facepalm.model.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,10 +59,15 @@ public class AccountService {
      * @param secondEmail The email of the second Account
      * @return returns a list of the two involved accounts with their updated friends field
      * @throws NonExistentAccountException Thrown if Account in the emails don't exist
+     * @throws AccountBlockedException Thrown if one Account is blocking the other
      */
-    public List<Account> befriendAccounts(String firstEmail, String secondEmail) throws NonExistentAccountException {
+    public List<Account> befriendAccounts(String firstEmail, String secondEmail) throws NonExistentAccountException, AccountBlockedException {
         Account firstAccount = checkIfEmailExistsAndGetAccount(firstEmail);
         Account secondAccount = checkIfEmailExistsAndGetAccount(secondEmail);
+        if ((firstAccount.getBlockedAccounts() != null && firstAccount.getBlockedAccounts().contains(secondAccount))
+                || (secondAccount.getBlockedAccounts() != null && secondAccount.getBlockedAccounts().contains(firstAccount))) {
+            throw new AccountBlockedException();
+        }
         firstAccount.addFriend(secondAccount);
         secondAccount.addFriend(firstAccount);
         firstAccount = accountRepository.save(firstAccount);

@@ -4,10 +4,7 @@ import com.lemuelinchrist.exercise.facepalm.controllers.dto.FriendPairRequestDTO
 import com.lemuelinchrist.exercise.facepalm.controllers.dto.FriendResponseDTO;
 import com.lemuelinchrist.exercise.facepalm.controllers.dto.RequestorTargetDTO;
 import com.lemuelinchrist.exercise.facepalm.controllers.dto.SuccessResponseDTO;
-import com.lemuelinchrist.exercise.facepalm.exception.AlreadyBlockedException;
-import com.lemuelinchrist.exercise.facepalm.exception.AlreadySubscribedException;
-import com.lemuelinchrist.exercise.facepalm.exception.InvalidParameterException;
-import com.lemuelinchrist.exercise.facepalm.exception.NonExistentAccountException;
+import com.lemuelinchrist.exercise.facepalm.exception.*;
 import com.lemuelinchrist.exercise.facepalm.model.Account;
 import com.lemuelinchrist.exercise.facepalm.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,9 +55,11 @@ public class AccountManagementController {
      * @throws InvalidParameterException   will be thrown if the frinds list doesn't exactly have two emails, or if there is an
      *                                     empty email, or if there is a malformed email
      * @throws NonExistentAccountException The service will not accept emails that do not have a created account yet
+     * @throws AccountBlockedException Thrown when one Account is blocking another
      */
     @RequestMapping(value = "/befriend", method = RequestMethod.POST)
-    public ResponseEntity<Map<String, String>> befriend(@RequestBody FriendPairRequestDTO friendPairRequestDTO) throws InvalidParameterException, NonExistentAccountException {
+    public ResponseEntity<Map<String, String>> befriend(@RequestBody FriendPairRequestDTO friendPairRequestDTO)
+            throws AccountBlockedException, InvalidParameterException, NonExistentAccountException {
         friendPairRequestDTO.checkValidity();
 
         accountService.befriendAccounts(friendPairRequestDTO.getFirstFriend(), friendPairRequestDTO.getSecondFriend());

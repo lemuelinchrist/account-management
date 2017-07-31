@@ -1,6 +1,7 @@
 package com.lemuelinchrist.exercise.facepalm.service;
 
 import com.lemuelinchrist.exercise.facepalm.FacepalmApplication;
+import com.lemuelinchrist.exercise.facepalm.exception.AccountBlockedException;
 import com.lemuelinchrist.exercise.facepalm.exception.AlreadyBlockedException;
 import com.lemuelinchrist.exercise.facepalm.exception.AlreadySubscribedException;
 import com.lemuelinchrist.exercise.facepalm.exception.ExistingEmailException;
@@ -233,6 +234,28 @@ public class AccountServiceTest {
         Mockito.when(accountRepository.findByEmail(target.getEmail())).thenReturn(Optional.of(target));
 
         assertThatThrownBy(() -> accountService.blockAccount(requestor.getEmail(), target.getEmail())).isInstanceOf(AlreadyBlockedException.class);
+
+    }
+
+    // USER STORY 5
+    // USER STORY 1
+    @Test
+    public void twoAccountsShouldNotBecomeFriendsIfAnAccountIsBlocked() throws Exception {
+        Account firstAccount = new Account();
+        String firstEmail = "firstEmail1@gmail.com";
+        firstAccount.setEmail(firstEmail);
+        firstAccount.setId(1L);
+        Account secondAccount = new Account();
+        String secondEmail = "secondEmail@gmail.com";
+        secondAccount.setEmail(secondEmail);
+        secondAccount.setId(2L);
+        secondAccount.addBlockedAccount(firstAccount);
+
+        Mockito.when(accountRepository.findByEmail(firstEmail)).thenReturn(Optional.of(firstAccount));
+        Mockito.when(accountRepository.findByEmail(secondEmail)).thenReturn(Optional.of(secondAccount));
+
+
+        assertThatThrownBy(() -> accountService.befriendAccounts(firstEmail, secondEmail)).isInstanceOf(AccountBlockedException.class);
 
     }
 
