@@ -4,11 +4,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
- * Thrown when Account is already Subscribed.
+ * Thrown when Account is already blocked
  *
  * @author Lemuel Cantos
  * @since 31/7/2017
  */
-@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Requestor already subscribed")
-public class AlreadySubscribedException extends Exception {
+@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Target already blocked")
+public class AlreadyBlockedException extends Exception {
 }

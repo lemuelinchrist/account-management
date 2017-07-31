@@ -129,6 +129,10 @@ public class AccountService {
         return target;
     }
 
+//    public Account blockAccount(String requestorEmail, String targetEmail) throws NonExistentAccountException, AlreadyBlockedException {
+//
+//    }
+
     private Account checkIfEmailExistsAndGetAccount(String email) throws NonExistentAccountException {
         // check first if account exists
         return accountRepository.findByEmail(email).orElseThrow(NonExistentAccountException::new);

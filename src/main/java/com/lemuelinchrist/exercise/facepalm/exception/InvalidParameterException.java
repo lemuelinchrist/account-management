@@ -4,6 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
+ * Thown when request parameters are not following the format. eg. malformed email or empty email.
+ *
  * @author Lemuel Cantos
  * @since 30/7/2017
  */
