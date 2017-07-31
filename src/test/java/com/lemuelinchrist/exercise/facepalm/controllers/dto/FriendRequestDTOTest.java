@@ -21,6 +21,8 @@ public class FriendRequestDTOTest {
         assertThatThrownBy(befriend::checkValidity);
         befriend.setFriends(Arrays.asList("", "previous@empty.com"));
         assertThatThrownBy(befriend::checkValidity);
+        befriend.setFriends(Arrays.asList("three@mail.com", "emails@gmail.com", "thirdOne@asdf.com"));
+        assertThatThrownBy(befriend::checkValidity);
 
     }
 
