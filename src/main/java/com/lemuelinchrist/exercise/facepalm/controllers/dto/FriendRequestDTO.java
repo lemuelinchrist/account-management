@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Convenient DTO object for JSON conversion of befriend feature
+ * Convenient DTO object for JSON conversion of requests
  *
  * @author Lemuel Cantos
  * @since 30/7/2017
@@ -35,14 +35,12 @@ public class FriendRequestDTO {
     }
 
     /**
-     * Ensures that this DTO Object will have exactly two emails and the emails are not empty and that they are properly
+     * Ensures that this DTO Object will have emails that are not empty and that they are properly
      * formed emails.
      *
      * @throws InvalidParameterException Thrown if the emails in friends list do not meet the expected criteria.
      */
     public void checkValidity() throws InvalidParameterException {
-        if (friends.size() != 2) throw new InvalidParameterException("You should only specify two emails");
-        final boolean emptyEmails;
         for (String email : friends) {
             if (email.isEmpty()) throw new InvalidParameterException("One of the emails is an empty email");
         }

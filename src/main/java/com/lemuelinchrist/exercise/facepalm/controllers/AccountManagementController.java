@@ -58,6 +58,9 @@ public class AccountManagementController {
     @RequestMapping(value = "/befriend", method = RequestMethod.POST)
     public ResponseEntity<Map<String, String>> befriend(@RequestBody FriendRequestDTO friendRequestDTO) throws InvalidParameterException, NonExistentAccountException {
         friendRequestDTO.checkValidity();
+        if (friendRequestDTO.getFriends().size() != 2)
+            throw new InvalidParameterException("You should only specify two emails");
+
         accountService.befriendAccounts(friendRequestDTO.getFirstFriend(), friendRequestDTO.getSecondFriend());
 
         Map<String, String> responseBody = new HashMap<>();
