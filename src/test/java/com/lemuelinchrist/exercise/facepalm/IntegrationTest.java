@@ -1,9 +1,6 @@
 package com.lemuelinchrist.exercise.facepalm;
 
-import com.lemuelinchrist.exercise.facepalm.controllers.dto.FriendPairRequestDTO;
-import com.lemuelinchrist.exercise.facepalm.controllers.dto.FriendResponseDTO;
-import com.lemuelinchrist.exercise.facepalm.controllers.dto.RequestorTargetDTO;
-import com.lemuelinchrist.exercise.facepalm.controllers.dto.SuccessResponseDTO;
+import com.lemuelinchrist.exercise.facepalm.controllers.dto.*;
 import com.lemuelinchrist.exercise.facepalm.model.Account;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -100,15 +97,37 @@ public class IntegrationTest {
 
         // ***************** USER STORY 4
         // subscribe to a few accounts
+
+        Account sixthAccount = createAccount("sixth@responsibility.com");
+        Account seventhAccount = createAccount("seventh@responsibility.com");
         subscribeToAccount(thirdEmail, fourthAccount.getEmail());
         subscribeToAccount(thirdEmail, firstEmail);
         subscribeToAccount(thirdEmail, fifthAccount.getEmail());
+        subscribeToAccount(seventhAccount.getEmail(), firstEmail);
 
         // ***************** USER STORY 5
         // subscribe to a few accounts
-        subscribeToAccount(fifthAccount.getEmail(), fourthAccount.getEmail());
-        subscribeToAccount(fifthAccount.getEmail(), firstEmail);
-        subscribeToAccount(fifthAccount.getEmail(), secondEmail);
+        blockAccount(fifthAccount.getEmail(), fourthAccount.getEmail());
+        blockAccount(fifthAccount.getEmail(), firstEmail);
+        blockAccount(fifthAccount.getEmail(), secondEmail);
+
+        // ***************** USER STORY 6
+        // subscribe to a few accounts
+        String emailInText1 = "lemuel@cantos.com";
+        String emailInText2 = "cantos@lemuel.com";
+        SenderDTO senderDTO = new SenderDTO(firstEmail, "This is a test message with " + emailInText1 + " and " + emailInText2 + " email in the middle");
+
+        HttpEntity<SenderDTO> emailRecipientListRequestEntity = new HttpEntity<>(senderDTO);
+        ResponseEntity<FriendResponseDTO> emailRecipientDTOResponseEntity = restTemplate
+                .postForEntity("/account-management/get-update-recipients", emailRecipientListRequestEntity, FriendResponseDTO.class);
+        FriendResponseDTO emailRecipientResponseDTO = emailRecipientDTOResponseEntity
+                .getBody();
+
+        assertThat(emailRecipientResponseDTO.getSuccess()).isEqualToIgnoringCase("true");
+        assertThat(emailRecipientResponseDTO.getFriends()).contains(secondAccount.getEmail(), thirdAccount.getEmail()
+                , fourthAccount.getEmail(), seventhAccount.getEmail(), emailInText1, emailInText2);
+        assertThat(emailRecipientResponseDTO.getFriends()).doesNotContain(sixthAccount.getEmail(), fifthAccount.getEmail());
+        assertThat(emailRecipientResponseDTO.getCount()).isEqualTo(6);
 
 
     }
