@@ -10,13 +10,13 @@ In Windows:
 
 ```gradlew bootRun```
 
-###URL
+### URL
 
 You can access the REST services using http://localhost:8080
 
-###The following are the mappings of each USER STORY:
+### The following are the mappings of each USER STORY:
 
-#####User Story 1:
+##### User Story 1:
 * /account-management/befriend
 * RequestMethod: POST
 * Request body:
@@ -35,7 +35,7 @@ friends:
 "success": true
 }
 ```
-#####User Story 2:
+##### User Story 2:
 * /account-management/get-friends
 * RequestMethod: POST
 * Request body:
@@ -56,7 +56,7 @@ email: 'andy@example.com'
 }
 ```
 
-#####User Story 3:
+##### User Story 3:
 * /account-management/get-common-friends
 * RequestMethod: POST
 * Request body:
@@ -81,7 +81,7 @@ friends:
 }
 ```
 
-#####User Story 4:
+##### User Story 4:
 * /account-management/subscribe-updates
 * RequestMethod: POST
 * Request body:
@@ -98,7 +98,7 @@ friends:
 }
 ```
 
-#####User Story 5:
+##### User Story 5:
 * /account-management/block-account
 * RequestMethod: POST
 * Request body:
@@ -115,7 +115,7 @@ friends:
 }
 ```
 
-#####User Story 6:
+##### User Story 6:
 * /account-management/get-update-recipients
 * RequestMethod: POST
 * Request body:
