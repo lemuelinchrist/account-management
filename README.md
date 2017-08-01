@@ -14,6 +14,16 @@ In Windows:
 
 You can access the REST services using http://localhost:8080
 
+### Provisioning Emails
+WARNING: the API's will not work unless you provision emails first. You can do this by a simple API.
+
+To create an Account, send a Post request to '''/accounts''' with the following json body:
+```
+{
+email: 'andy@example.com'
+}
+```
+
 ### The following are the mappings of each USER STORY:
 
 ##### User Story 1:
