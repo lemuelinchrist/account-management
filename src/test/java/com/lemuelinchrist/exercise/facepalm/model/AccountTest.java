@@ -164,8 +164,8 @@ public class AccountTest {
         thirdAccount = accountRepository.save(thirdAccount);
 
         assertThat(accountRepository.findFriendsAndSubscribersOf(FIRST_EMAIL).orElseThrow(Exception::new))
-                .hasSize(3)
-                .contains(secondAccount.getEmail(), thirdAccount.getEmail(), fourthAccount.getEmail());
+                .hasSize(2)
+                .contains(secondAccount.getEmail(), fourthAccount.getEmail());
 
         assertThat(accountRepository.findByBlockedAccountsContaining(firstAccount).orElseThrow(Exception::new))
                 .hasSize(2)

@@ -150,7 +150,9 @@ public class AccountService {
             throw new AlreadyBlockedException();
         }
         requestor.addBlockedAccount(target);
+        target.addBlocker(requestor);
         accountRepository.save(requestor);
+        accountRepository.save(target);
 
         return requestor;
     }
@@ -169,14 +171,7 @@ public class AccountService {
      */
     public List<String> getBroadcastRecipientsOf(String senderEmail) throws NonExistentAccountException {
         Account sender = checkIfEmailExistsAndGetAccount(senderEmail);
-        // TODO: find a unified JPQL statement so we dont have to do the loop
         Set<String> set = new HashSet<>(accountRepository.findFriendsAndSubscribersOf(senderEmail).orElseGet(ArrayList::new));
-        List<Account> blockedList = accountRepository.findByBlockedAccountsContaining(sender).orElseGet(ArrayList::new);
-        for (Account blockedAccount : blockedList) {
-            if (set.contains(blockedAccount.getEmail())) {
-                set.remove(blockedAccount.getEmail());
-            }
-        }
 
         return new ArrayList<String>(set);
     }

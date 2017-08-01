@@ -24,7 +24,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     @Query(value = "select distinct a.email from Account a where " +
             "(a.email in (select f.email from Account a join a.friends f where a.email = ?1) " +
-            "or a.email in (select s.email from Account a join a.subscribers s where a.email = ?1))")
+            "or a.email in (select s.email from Account a join a.subscribers s where a.email = ?1)) " +
+            "and a.email not in (select b.email from Account a join a.blockers b where a.email =?1)")
     Optional<List<String>> findFriendsAndSubscribersOf(String email);
 
     Optional<List<Account>> findByBlockedAccountsContaining(Account account);

@@ -38,6 +38,11 @@ public class Account {
     @ManyToMany(fetch = FetchType.LAZY)
     private Set<Account> blockedAccounts;
 
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "blockedAccounts", fetch = FetchType.LAZY)
+    private Set<Account> blockers;
+
     public String getEmail() {
         return email;
     }
@@ -89,6 +94,14 @@ public class Account {
 
     }
 
+    public void addBlocker(Account account) {
+        if (blockers == null) {
+            blockers = new HashSet<>();
+        }
+        blockers.add(account);
+
+    }
+
     public Set<Account> getFriends() {
         return friends;
     }
@@ -112,4 +125,13 @@ public class Account {
     public void setBlockedAccounts(Set<Account> blockedAccounts) {
         this.blockedAccounts = blockedAccounts;
     }
+
+    public Set<Account> getBlockers() {
+        return blockers;
+    }
+
+    public void setBlockers(Set<Account> blockers) {
+        this.blockers = blockers;
+    }
+
 }

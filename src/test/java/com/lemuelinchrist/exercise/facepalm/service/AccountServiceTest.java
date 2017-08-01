@@ -276,12 +276,10 @@ public class AccountServiceTest {
         Account someRandomAccount = new Account();
         someRandomAccount.setEmail(someRandomEmail);
 
-        List<String> friendsAndSubscribersList = Arrays.asList("hello@world.com", "byeWorld@wonderful.com", "lastEmail@gmamil.com", emailToBeBlocked);
-        List<Account> blacklist = Arrays.asList(someRandomAccount, accountToBeBlocked);
+        List<String> friendsAndSubscribersList = Arrays.asList("hello@world.com", "byeWorld@wonderful.com", "lastEmail@gmamil.com");
 
         Mockito.when(accountRepository.findByEmail(email)).thenReturn(Optional.of(account));
         Mockito.when(accountRepository.findFriendsAndSubscribersOf(email)).thenReturn(Optional.of(friendsAndSubscribersList));
-        Mockito.when(accountRepository.findByBlockedAccountsContaining(account)).thenReturn(Optional.of(blacklist));
 
         assertThat(accountService.getBroadcastRecipientsOf(email)).contains("hello@world.com", "byeWorld@wonderful.com", "lastEmail@gmamil.com")
                 .doesNotContain(emailToBeBlocked);
